@@ -44,6 +44,8 @@ h1 {
 
 button,
 input::file-selector-button,
+input[type="text"],
+input[type="password"],
 select {
   border: 1px solid currentColor;
   border-radius: 4px;
