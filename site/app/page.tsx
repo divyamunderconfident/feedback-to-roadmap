@@ -1,8 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { MAX_THEMES, MIN_THEMES } from "@/lib/cluster";
 import { MAX_ROWS, parseCsv, type ParsedCsv } from "@/lib/csv";
+import type { WorkerMessage } from "@/lib/embed.worker";
 import { checkColumn, guessMapping, type Field, type Mapping } from "@/lib/mapping";
+
+type Progress = Extract<WorkerMessage, { type: "progress" }>;
+type Result = Extract<WorkerMessage, { type: "done" }> & { rowIndex: number[] };
+
+const PHASES = {
+  download: () => "Downloading the model (once; your browser keeps it)",
+  embed: (p: Progress) => `Embedding rows: ${p.done.toLocaleString()} of ${p.total.toLocaleString()}`,
+  cluster: (p: Progress) => `Grouping into themes: trying ${p.done}`,
+};
+const shorten = (s: string) => (s.length > 200 ? s.slice(0, 200) + "…" : s);
 
 const OPTIONAL = ["rating", "date", "segment"] as const;
 const FIELDS: Field[] = ["text", ...OPTIONAL];
@@ -12,10 +24,45 @@ export default function Home() {
   const [csv, setCsv] = useState<ParsedCsv | null>(null);
   const [mapping, setMapping] = useState<Mapping>({ text: "", rating: "", date: "", segment: "" });
   const [error, setError] = useState("");
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
+  const worker = useRef<Worker | null>(null);
+
+  // Any new file or mapping makes earlier themes out of date, so stop a running job and clear them.
+  function reset() {
+    worker.current?.terminate();
+    worker.current = null;
+    setProgress(null);
+    setResult(null);
+  }
+
+  function remap(next: Mapping) {
+    reset();
+    setMapping(next);
+  }
+
+  function findThemes() {
+    if (!csv) return;
+    reset();
+    // Rows with empty text are left out; otherwise they would form a theme of their own.
+    const rowIndex = csv.rows.flatMap((r, i) => ((r[mapping.text] ?? "").trim() ? [i] : []));
+    const w = new Worker(new URL("../lib/embed.worker.ts", import.meta.url), { type: "module" });
+    worker.current = w;
+    w.onmessage = ({ data }: MessageEvent<WorkerMessage>) => {
+      if (data.type === "progress") return setProgress(data);
+      w.terminate();
+      worker.current = null;
+      setProgress(null);
+      if (data.type === "done") setResult({ ...data, rowIndex });
+      else setError(`Finding themes failed: ${data.message}`);
+    };
+    w.postMessage(rowIndex.map((i) => csv.rows[i][mapping.text]));
+  }
 
   function load(text: string) {
     try {
       const parsed = parseCsv(text);
+      reset();
       setCsv(parsed);
       setMapping(guessMapping(parsed.columns));
       setError("");
@@ -73,7 +120,7 @@ export default function Home() {
             <legend>Columns</legend>
             <label>
               Text (required):{" "}
-              <select value={mapping.text} onChange={(e) => setMapping({ ...mapping, text: e.target.value })}>
+              <select value={mapping.text} onChange={(e) => remap({ ...mapping, text: e.target.value })}>
                 {csv.columns.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
@@ -84,7 +131,7 @@ export default function Home() {
               <label key={field}>
                 {" "}
                 {label(field)} (optional):{" "}
-                <select value={mapping[field]} onChange={(e) => setMapping({ ...mapping, [field]: e.target.value })}>
+                <select value={mapping[field]} onChange={(e) => remap({ ...mapping, [field]: e.target.value })}>
                   <option value="">(none)</option>
                   {csv.columns.map((c) => (
                     <option key={c}>{c}</option>
@@ -95,11 +142,53 @@ export default function Home() {
             ))}
           </fieldset>
 
-          {/* No step after mapping exists yet (R2); for now the button only shows whether the text column is ready. */}
           <div>
-            <button disabled={!checks.text?.ok}>Continue</button>
+            <button disabled={!checks.text?.ok || progress !== null} onClick={findThemes}>
+              Continue
+            </button>
             {checks.rating && !checks.rating.ok && <p>Rating will be ignored.</p>}
           </div>
+
+          {progress && (
+            <p>
+              <label>
+                {PHASES[progress.phase](progress)}
+                <br />
+                <progress value={progress.done} max={progress.total} />
+              </label>
+            </p>
+          )}
+
+          {result && (
+            <section>
+              <h2>{result.k} themes</h2>
+              <p>
+                <small>
+                  {Object.keys(result.scores).length === 0
+                    ? "Too few rows to split into themes."
+                    : `Tried ${Object.keys(result.scores)[0]} to ${Object.keys(result.scores).at(-1)} themes ` +
+                      `(at most ${MAX_THEMES}, at least ${MIN_THEMES} when there are enough rows) and kept the count ` +
+                      "whose themes separate best (simplified silhouette score, higher is better): " +
+                      Object.entries(result.scores)
+                        .map(([k, s]) => `${k}: ${s.toFixed(3)}`)
+                        .join(", ") +
+                      "."}
+                </small>
+              </p>
+              <ol>
+                {result.themes.map((t, i) => (
+                  <li key={i}>
+                    {t.size.toLocaleString()} rows ({Math.round(t.share * 100)}%)
+                    <ul>
+                      {t.examples.map((e) => (
+                        <li key={e}>{shorten(csv.rows[result.rowIndex[e]][mapping.text])}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
 
           <table>
             <caption>First 20 rows</caption>
