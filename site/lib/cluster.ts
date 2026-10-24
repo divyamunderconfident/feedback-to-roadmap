@@ -1,11 +1,13 @@
 // Groups embedding vectors into themes. Pure functions, no browser or model code, so they can be tested.
+// How: split vectors into FINE_GROUPS small groups, then merge the two most similar groups again and again.
+// The merge order is a tree; cutting it at any number of themes is instant, so the page can offer a slider.
 
-export const MIN_THEMES = 6; // fewer is too coarse for a roadmap
-export const MAX_THEMES = 20; // more is hard to read
-export const SAMPLE_SIZE = 4000; // the theme count is chosen on a sample; trying every count on all rows is too slow
+export const FINE_GROUPS = 40;
+export const SAMPLE_SIZE = 4000; // fine groups are fitted on a sample, then every vector joins its nearest group
 export const EXAMPLES_PER_THEME = 3;
 
 export type Clustering = { labels: number[]; centroids: number[][] };
+export type Merge = [into: number, from: number]; // fine-group ids; `from` joins `into`
 export type Theme = {
   sentences: number;
   reviews: number; // distinct reviews with at least one sentence in the theme
@@ -29,6 +31,17 @@ function nearest(v: number[], centroids: number[][]) {
   return best;
 }
 
+// Mean vector of each label; a label with no members gets an empty array.
+function means(vectors: number[][], labels: number[], k: number) {
+  const sums = Array.from({ length: k }, () => new Array(vectors[0]?.length ?? 0).fill(0));
+  const counts = new Array(k).fill(0);
+  vectors.forEach((v, i) => {
+    v.forEach((x, d) => (sums[labels[i]][d] += x));
+    counts[labels[i]]++;
+  });
+  return sums.map((s, j) => (counts[j] ? s.map((x) => x / counts[j]) : []));
+}
+
 // Small seeded random generator (mulberry32), so the same file always gives the same themes.
 function random(seed: number) {
   return () => {
@@ -37,6 +50,18 @@ function random(seed: number) {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+// Same seed, same sample: a seeded shuffle of the indices, first `size` kept.
+function sample(n: number, size: number, seed: number) {
+  const idx = Array.from({ length: n }, (_, i) => i);
+  if (n <= size) return idx;
+  const rand = random(seed);
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx.slice(0, size);
 }
 
 // Subtracts each group's mean vector from its members, then scales each back to length 1. Sentences about the
@@ -74,55 +99,68 @@ export function kmeans(vectors: number[][], k: number, seed = 1, maxIter = 50): 
     const next = vectors.map((v) => nearest(v, centroids));
     if (next.every((l, i) => l === labels[i])) break;
     labels = next;
-    for (let j = 0; j < k; j++) {
-      const members = vectors.filter((_, i) => labels[i] === j);
-      if (members.length === 0) continue; // keep an empty cluster's old centre
-      centroids[j] = members[0].map((_, d) => members.reduce((s, m) => s + m[d], 0) / members.length);
-    }
+    means(vectors, labels, k).forEach((m, j) => {
+      if (m.length) centroids[j] = m; // keep an empty cluster's old centre
+    });
   }
   return { labels, centroids };
 }
 
-// Simplified silhouette: for each row, compare the distance to its own centre (a) with the distance
-// to the nearest other centre (b). Score is the mean of (b - a) / max(a, b): near 1 means tight,
-// well-separated themes; near 0 means themes overlap. Costs n × k, unlike the full silhouette's n².
-export function silhouette(vectors: number[][], { labels, centroids }: Clustering) {
-  let total = 0;
-  vectors.forEach((v, i) => {
-    const a = Math.sqrt(dist2(v, centroids[labels[i]]));
-    const b = Math.min(...centroids.filter((_, j) => j !== labels[i]).map((c) => Math.sqrt(dist2(v, c))));
-    const m = Math.max(a, b);
-    total += m === 0 ? 0 : (b - a) / m;
+// FINE_GROUPS small groups (fewer for small inputs), fitted on a sample; then every vector joins its nearest
+// group and each group's centre is recomputed from all its members.
+export function fineGroups(vectors: number[][], seed = 1): Clustering {
+  const picked = sample(vectors.length, SAMPLE_SIZE, seed).map((i) => vectors[i]);
+  const { centroids } = kmeans(picked, Math.min(FINE_GROUPS, picked.length), seed);
+  const labels = vectors.map((v) => nearest(v, centroids));
+  return { labels, centroids: means(vectors, labels, centroids.length).map((m, j) => (m.length ? m : centroids[j])) };
+}
+
+const cosine = (a: number[], b: number[]) => {
+  let dot = 0;
+  for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+  const n = Math.hypot(...a) * Math.hypot(...b);
+  return n === 0 ? 0 : dot / n;
+};
+
+// Agglomerative merging: repeatedly merge the two groups whose centres have the highest cosine similarity.
+// A merged centre is the size-weighted mean, i.e. the centre of all its members. Returns merges in order.
+export function mergeTree({ labels, centroids }: Clustering): Merge[] {
+  const size = centroids.map((_, j) => labels.filter((l) => l === j).length);
+  const centre = centroids.map((c) => [...c]);
+  const alive = new Set(centroids.map((_, j) => j).filter((j) => size[j] > 0));
+  const merges: Merge[] = [];
+  while (alive.size > 1) {
+    let best: Merge = [-1, -1];
+    let bestSim = -Infinity;
+    const ids = [...alive];
+    for (let a = 0; a < ids.length; a++)
+      for (let b = a + 1; b < ids.length; b++) {
+        const sim = cosine(centre[ids[a]], centre[ids[b]]);
+        if (sim > bestSim) [best, bestSim] = [[ids[a], ids[b]], sim];
+      }
+    const [into, from] = best;
+    const n = size[into] + size[from];
+    centre[into] = centre[into].map((x, d) => (x * size[into] + centre[from][d] * size[from]) / n);
+    size[into] = n;
+    alive.delete(from);
+    merges.push(best);
+  }
+  return merges;
+}
+
+// Applies merges until `themes` groups are left. Labels are renumbered 0..themes-1; centres are member means.
+export function cut(vectors: number[][], fine: Clustering, merges: Merge[], themes: number): Clustering {
+  const groups = merges.length + 1;
+  const root = fine.centroids.map((_, j) => j);
+  const find = (j: number): number => (root[j] === j ? j : (root[j] = find(root[j])));
+  merges.slice(0, Math.max(0, groups - themes)).forEach(([into, from]) => (root[find(from)] = find(into)));
+  const ids = new Map<number, number>();
+  const labels = fine.labels.map((l) => {
+    const r = find(l);
+    if (!ids.has(r)) ids.set(r, ids.size);
+    return ids.get(r)!;
   });
-  return total / vectors.length;
-}
-
-// Same seed, same sample: a seeded shuffle of the indices, first `size` kept.
-function sample(n: number, size: number, seed: number) {
-  const idx = Array.from({ length: n }, (_, i) => i);
-  if (n <= size) return idx;
-  const rand = random(seed);
-  for (let i = n - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [idx[i], idx[j]] = [idx[j], idx[i]];
-  }
-  return idx.slice(0, size);
-}
-
-// Tries every theme count from MIN_THEMES to MAX_THEMES on a sample and keeps the one whose themes separate best,
-// then groups all vectors into that many themes. Small inputs try fewer counts: at most √(n/2) themes.
-export function chooseK(vectors: number[][], seed = 1, onTry?: (k: number) => void, sampleSize = SAMPLE_SIZE) {
-  const picked = sample(vectors.length, sampleSize, seed).map((i) => vectors[i]);
-  const maxK = Math.min(MAX_THEMES, Math.floor(Math.sqrt(picked.length / 2)));
-  const scores: Record<number, number> = {};
-  if (maxK < 2) return { k: 1, scores, clustering: kmeans(vectors, 1, seed) };
-  let best = { k: 0, score: -Infinity };
-  for (let k = Math.min(MIN_THEMES, maxK); k <= maxK; k++) {
-    onTry?.(k);
-    scores[k] = silhouette(picked, kmeans(picked, k, seed));
-    if (scores[k] > best.score) best = { k, score: scores[k] }; // ties keep the smaller k
-  }
-  return { k: best.k, scores, clustering: kmeans(vectors, best.k, seed) };
+  return { labels, centroids: means(vectors, labels, ids.size) };
 }
 
 // Themes with the most reviews first. Examples are the sentences nearest the centre (the most typical ones),

@@ -2,13 +2,16 @@
 // then groups them into themes. The model downloads once from Hugging Face and the browser caches it.
 // No API key or server is involved.
 import { pipeline, type ProgressInfo } from "@huggingface/transformers";
-import { centerBy, chooseK, MAX_THEMES, summarize, type Theme } from "./cluster";
-import { splitSentences, type Review, type Sentence } from "./sentences";
+import { centerBy, cut, fineGroups, mergeTree, summarize, type Theme } from "./cluster";
+import { maskAppNames, splitSentences, type Review, type Sentence } from "./sentences";
+
+export const MIN_THEMES = 5; // the slider's lower end
 
 export type ThemeView = Omit<Theme, "examples"> & { examples: Sentence[] };
 export type WorkerMessage =
   | { type: "progress"; phase: "download" | "embed" | "cluster"; done: number; total: number }
-  | { type: "done"; k: number; scores: Record<number, number>; themes: ThemeView[]; sentences: number; centered: boolean }
+  // themesByCount[n] holds the themes when the tree is cut at n, for every n the slider can show
+  | { type: "done"; themesByCount: Record<number, ThemeView[]>; sentences: number; centered: boolean }
   | { type: "error"; message: string };
 
 const MODEL = "Xenova/all-MiniLM-L6-v2";
@@ -29,7 +32,7 @@ onmessage = async ({ data: reviews }: MessageEvent<Review[]>) => {
     });
 
     const sentences = splitSentences(reviews);
-    const texts = sentences.map((s) => s.text);
+    const texts = maskAppNames(sentences); // embedded text only; sentences keep their original text for display
     // Each batch is padded to its longest text, so embed in length order and put vectors back in sentence order.
     const order = texts.map((_, i) => i).sort((a, b) => texts[a].length - texts[b].length);
     let vectors: number[][] = new Array(texts.length);
@@ -48,14 +51,19 @@ onmessage = async ({ data: reviews }: MessageEvent<Review[]>) => {
     const centered = apps.some(Boolean);
     if (centered) vectors = centerBy(vectors, apps);
 
-    const { k, scores, clustering } = chooseK(vectors, 1, (k) =>
-      post({ type: "progress", phase: "cluster", done: k, total: MAX_THEMES }),
-    );
-    const themes = summarize(vectors, clustering, sentences.map((s) => s.row), apps).map((t) => ({
-      ...t,
-      examples: t.examples.map((i) => sentences[i]),
-    }));
-    post({ type: "done", k, scores, themes, sentences: sentences.length, centered });
+    const fine = fineGroups(vectors);
+    const merges = mergeTree(fine);
+    const maxThemes = merges.length + 1;
+    const rows = sentences.map((s) => s.row);
+    const themesByCount: Record<number, ThemeView[]> = {};
+    for (let n = Math.min(MIN_THEMES, maxThemes); n <= maxThemes; n++) {
+      themesByCount[n] = summarize(vectors, cut(vectors, fine, merges, n), rows, apps).map((t) => ({
+        ...t,
+        examples: t.examples.map((i) => sentences[i]),
+      }));
+      post({ type: "progress", phase: "cluster", done: n, total: maxThemes });
+    }
+    post({ type: "done", themesByCount, sentences: sentences.length, centered });
   } catch (e) {
     post({ type: "error", message: (e as Error).message });
   }

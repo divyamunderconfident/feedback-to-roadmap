@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { MAX_THEMES, MIN_THEMES, SAMPLE_SIZE } from "@/lib/cluster";
+import { FINE_GROUPS } from "@/lib/cluster";
 import { MIN_WORDS } from "@/lib/sentences";
 import { MAX_ROWS, parseCsv, type ParsedCsv } from "@/lib/csv";
 import type { WorkerMessage } from "@/lib/embed.worker";
@@ -13,8 +13,9 @@ type Result = Extract<WorkerMessage, { type: "done" }>;
 const PHASES = {
   download: () => "Downloading the model (once; your browser keeps it)",
   embed: (p: Progress) => `Embedding sentences: ${p.done.toLocaleString()} of ${p.total.toLocaleString()}`,
-  cluster: (p: Progress) => `Grouping into themes: trying ${p.done}`,
+  cluster: () => "Grouping into themes",
 };
+const DEFAULT_THEMES = 12; // a starting point for the slider, not a claim that 12 is right
 const shorten = (s: string) => (s.length > 200 ? s.slice(0, 200) + "…" : s);
 
 const OPTIONAL = ["rating", "date", "segment"] as const;
@@ -27,6 +28,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Progress | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [themeCount, setThemeCount] = useState(DEFAULT_THEMES);
   const worker = useRef<Worker | null>(null);
 
   // Any new file or mapping makes earlier themes out of date, so stop a running job and clear them.
@@ -35,6 +37,7 @@ export default function Home() {
     worker.current = null;
     setProgress(null);
     setResult(null);
+    setThemeCount(DEFAULT_THEMES);
   }
 
   function remap(next: Mapping) {
@@ -87,6 +90,8 @@ export default function Home() {
   const checks = Object.fromEntries(
     mapped.map((f) => [f, checkColumn(f, csv?.rows.map((r) => r[mapping[f]] ?? "") ?? [])]),
   );
+  const counts = result ? Object.keys(result.themesByCount).map(Number) : [];
+  const shownCount = Math.min(Math.max(themeCount, counts[0] ?? 0), counts.at(-1) ?? 0);
   const status = (f: Field) =>
     checks[f] && <small role={checks[f].ok ? undefined : "alert"}> {checks[f].message}</small>;
 
@@ -166,47 +171,35 @@ export default function Home() {
 
           {result && (
             <section>
-              <h2>{result.k} themes</h2>
+              <h2>{shownCount} themes</h2>
               <p>
                 {result.sentences.toLocaleString()} sentences of {MIN_WORDS} or more words.{" "}
                 {result.centered
-                  ? "Each app's average meaning was removed first, so themes group by problem rather than by app."
+                  ? "App names and each app's average meaning were removed first, so themes group by problem rather than by app."
                   : "No segment column is mapped, so themes may partly group by app or product."}{" "}
                 A review can raise several problems, so it can count towards several themes.
               </p>
-              {Object.keys(result.scores).length === 0 ? (
-                <p>Too few sentences to split into themes.</p>
-              ) : (
-                <>
+              <p>
+                Sentences are split into {FINE_GROUPS} small groups, the most similar groups are merged step by step,
+                and the slider sets where to stop.
+              </p>
+              {counts.length > 1 && (
                 <p>
-                  How the number of themes was chosen: each count from {MIN_THEMES} to {MAX_THEMES} was tried on a
-                  sample of up to {SAMPLE_SIZE.toLocaleString()} sentences, and the count whose themes separate best
-                  was kept (simplified silhouette score; higher is better).
+                  <label>
+                    Fewer themes ↔ More themes{" "}
+                    <input
+                      type="range"
+                      min={counts[0]}
+                      max={counts.at(-1)}
+                      value={shownCount}
+                      onChange={(e) => setThemeCount(Number(e.target.value))}
+                    />
+                  </label>{" "}
+                  <output>{shownCount}</output>
                 </p>
-                <table>
-                  <caption>Score for each number of themes</caption>
-                  <thead>
-                    <tr>
-                      <th>Themes</th>
-                      <th>Score</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(result.scores).map(([k, s]) => (
-                      <tr key={k} style={{ fontWeight: Number(k) === result.k ? 700 : undefined }}>
-                        <td>
-                          {k}
-                          {Number(k) === result.k && " (chosen)"}
-                        </td>
-                        <td>{s.toFixed(3)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                </>
               )}
               <ol>
-                {result.themes.map((t, i) => (
+                {result.themesByCount[shownCount].map((t, i) => (
                   <li key={i}>
                     {t.sentences.toLocaleString()} sentences from {t.reviews.toLocaleString()} reviews
                     {result.centered && <> · apps: {t.apps.map(([app, n]) => `${app} ${n}`).join(", ")}</>}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { centerBy, chooseK, kmeans, silhouette, summarize } from "./cluster";
+import { centerBy, cut, FINE_GROUPS, fineGroups, kmeans, mergeTree, summarize } from "./cluster";
 import fixture from "./fixtures/clusters.json";
 
 // 240 fake sentences: 8 problems × 3 apps × 10, two sentences per review. 11-number vectors stand in for real
@@ -45,33 +45,51 @@ describe("kmeans", () => {
   });
 });
 
-describe("silhouette", () => {
-  it("scores the true grouping higher than a wrong number of themes", () => {
-    const at = (k: number) => silhouette(centered, kmeans(centered, k));
-    expect(at(8)).toBeGreaterThan(at(6));
-    expect(at(8)).toBeGreaterThan(at(10));
-  });
-});
+describe("fine groups and merge tree", () => {
+  const fine = fineGroups(centered);
+  const merges = mergeTree(fine);
+  const groupsAt = (themes: number) => cut(centered, fine, merges, themes).labels;
 
-describe("chooseK", () => {
-  it("finds the 8 problems, trying 6 to 10 themes for 240 rows", () => {
-    const tried: number[] = [];
-    const { k, scores, clustering } = chooseK(centered, 1, (k) => tried.push(k));
-    expect(tried).toEqual([6, 7, 8, 9, 10]); // √(240 / 2) ≈ 10
-    expect(k).toBe(8);
-    expect(Object.keys(scores).map(Number)).toEqual(tried);
-    expect(matchesGroups(clustering.labels)).toBe(true);
+  it("splits the fixture into 40 fine groups, each inside one problem", () => {
+    expect(new Set(fine.labels).size).toBe(FINE_GROUPS);
+    expect(fine.labels).toHaveLength(centered.length);
+    // every fine group holds one problem only
+    expect(new Set(fine.labels.map((l, i) => `${l}:${groups[i]}`)).size).toBe(FINE_GROUPS);
   });
 
-  it("chooses on a sample but groups every vector", () => {
-    const { k, clustering } = chooseK(centered, 1, undefined, 160);
-    expect(k).toBe(8);
-    expect(clustering.labels).toHaveLength(centered.length);
-    expect(chooseK(centered, 1, undefined, 160)).toEqual(chooseK(centered, 1, undefined, 160));
+  it("recovers the 8 problems when cut at 8", () => {
+    expect(new Set(groupsAt(8)).size).toBe(8);
+    expect(matchesGroups(groupsAt(8))).toBe(true);
   });
 
-  it("uses one theme for very small inputs", () => {
-    expect(chooseK(centered.slice(0, 5)).k).toBe(1);
+  it("removes exactly one group per merge, keeping every sentence", () => {
+    expect(merges).toHaveLength(FINE_GROUPS - 1);
+    for (const themes of [40, 20, 12, 5, 1]) {
+      const labels = groupsAt(themes);
+      expect(new Set(labels).size).toBe(themes);
+      expect(labels).toHaveLength(centered.length);
+    }
+  });
+
+  it("cut at 40 is the fine groups themselves", () => {
+    const pairs = new Set(groupsAt(40).map((l, i) => `${l}:${fine.labels[i]}`));
+    expect(pairs.size).toBe(FINE_GROUPS);
+  });
+
+  it("gives the same tree for the same seed", () => {
+    expect(mergeTree(fineGroups(centered, 3))).toEqual(mergeTree(fineGroups(centered, 3)));
+  });
+
+  it("merges the most similar centres first", () => {
+    // groups 0 and 1 point almost the same way; group 2 points elsewhere, so it joins last
+    const fineToy = { labels: [0, 1, 1, 1, 2], centroids: [[1, 0.1], [1, 0], [0, 1]] };
+    expect(mergeTree(fineToy)).toEqual([[0, 1], [0, 2]]);
+  });
+
+  it("handles fewer vectors than fine groups", () => {
+    const few = centered.slice(0, 10);
+    const tiny = fineGroups(few);
+    expect(mergeTree(tiny)).toHaveLength(new Set(tiny.labels).size - 1);
   });
 });
 
