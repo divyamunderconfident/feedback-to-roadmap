@@ -43,7 +43,7 @@ function means(vectors: number[][], labels: number[], k: number) {
 }
 
 // Small seeded random generator (mulberry32), so the same file always gives the same themes.
-function random(seed: number) {
+export function random(seed: number) {
   return () => {
     seed = (seed + 0x6d2b79f5) | 0;
     let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);

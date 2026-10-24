@@ -21,7 +21,8 @@ const PHASES = {
   embed: (p: Progress) => `Embedding sentences: ${p.done.toLocaleString()} of ${p.total.toLocaleString()}`,
   cluster: () => "Grouping into themes",
 };
-const DEFAULT_THEMES = 12; // a starting point for the slider, not a claim that 12 is right
+// A starting point for the slider. 20 rather than 12: on the demo, 20 themes agreed better with the AWARE labels (RESULTS.md).
+const DEFAULT_THEMES = 20;
 const SHOWN_EXAMPLES = 3;
 const shorten = (s: string) => (s.length > 200 ? s.slice(0, 200) + "…" : s);
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;

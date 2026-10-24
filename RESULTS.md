@@ -104,3 +104,8 @@ Sentences in the run: 21,761; linked to an AWARE label: 5,853.
 broad classification that cannot tell call audio from cursor jumping. The earlier hand check of "Call audio volume
 and quality issues" found that sentences near 0.30 were mostly off-topic, and AWARE cannot confirm or refute that.
 The site still uses 0.30 and 12 themes; changing them is a separate decision.
+
+**Decision.** The default is now **20 themes**; the threshold **stays at 0.30**. The AWARE categories are too broad
+to choose the threshold: macro precision hardly changes between 0.25 and 0.40, so F1 here mostly rewards recall, and
+the lowest threshold wins by default. The earlier hand check found sentences near 0.30 mostly off-topic, which argues
+against going lower. The threshold will be checked instead with a hand-labelled sample (`eval/labels/theme_check.csv`).
