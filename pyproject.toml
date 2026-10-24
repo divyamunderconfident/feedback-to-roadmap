@@ -1,0 +1,20 @@
+[project]
+name = "feedback-to-roadmap-eval"
+version = "0.0.1"
+description = "Offline runs and evaluation for Feedback to Roadmap"
+requires-python = ">=3.11"
+dependencies = ["requests"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["eval"]
