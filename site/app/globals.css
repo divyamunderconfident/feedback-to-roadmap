@@ -61,6 +61,12 @@ input::file-selector-button:hover {
   background: color-mix(in srgb, currentColor 10%, transparent);
 }
 
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+}
+
 fieldset {
   display: flex;
   flex-wrap: wrap;
@@ -77,6 +83,7 @@ table {
 
 caption {
   text-align: left;
+  white-space: nowrap;
   font-weight: 600;
   padding-bottom: 0.5rem;
 }

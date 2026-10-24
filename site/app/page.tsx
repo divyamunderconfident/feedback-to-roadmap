@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { MAX_ROWS, parseCsv, type ParsedCsv } from "@/lib/csv";
+import { checkColumn, type Field } from "@/lib/mapping";
 
 const OPTIONAL = ["rating", "date", "segment"] as const;
-type Mapping = { text: string } & Record<(typeof OPTIONAL)[number], string>;
+const FIELDS: Field[] = ["text", ...OPTIONAL];
+type Mapping = Record<Field, string>;
+const label = (field: Field) => field[0].toUpperCase() + field.slice(1);
 
 export default function Home() {
   const [csv, setCsv] = useState<ParsedCsv | null>(null);
@@ -33,6 +36,13 @@ export default function Home() {
     if (!res.ok) return setError(`Could not load the demo data (${res.status}).`);
     load(await res.text());
   }
+
+  const mapped = FIELDS.filter((f) => mapping[f]);
+  const checks = Object.fromEntries(
+    mapped.map((f) => [f, checkColumn(f, csv?.rows.map((r) => r[mapping[f]] ?? "") ?? [])]),
+  );
+  const status = (f: Field) =>
+    checks[f] && <small role={checks[f].ok ? undefined : "alert"}> {checks[f].message}</small>;
 
   return (
     <main>
@@ -74,35 +84,44 @@ export default function Home() {
                   <option key={c}>{c}</option>
                 ))}
               </select>
+              {status("text")}
             </label>
             {OPTIONAL.map((field) => (
               <label key={field}>
                 {" "}
-                {field[0].toUpperCase() + field.slice(1)} (optional):{" "}
+                {label(field)} (optional):{" "}
                 <select value={mapping[field]} onChange={(e) => setMapping({ ...mapping, [field]: e.target.value })}>
                   <option value="">(none)</option>
                   {csv.columns.map((c) => (
                     <option key={c}>{c}</option>
                   ))}
                 </select>
+                {status(field)}
               </label>
             ))}
           </fieldset>
+
+          {/* No step after mapping exists yet (R2); for now the button only shows whether the text column is ready. */}
+          <button disabled={!checks.text?.ok}>Continue</button>
 
           <table>
             <caption>First 20 rows</caption>
             <thead>
               <tr>
-                {csv.columns.map((c) => (
-                  <th key={c}>{c}</th>
+                {mapped.map((f) => (
+                  <th key={f}>
+                    {label(f)}
+                    <br />
+                    <small>{mapping[f]}</small>
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {csv.rows.slice(0, 20).map((row, i) => (
                 <tr key={i}>
-                  {csv.columns.map((c) => (
-                    <td key={c}>{row[c]}</td>
+                  {mapped.map((f) => (
+                    <td key={f}>{row[mapping[f]]}</td>
                   ))}
                 </tr>
               ))}
