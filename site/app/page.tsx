@@ -180,8 +180,8 @@ export default function Home() {
                 A review can raise several problems, so it can count towards several themes.
               </p>
               <p>
-                Sentences are split into {FINE_GROUPS} small groups, the most similar groups are merged step by step,
-                and the slider sets where to stop.
+                Sentences are split into {FINE_GROUPS} small groups, the closest groups are merged step by step
+                (avoiding very large groups), and the slider sets where to stop.
               </p>
               {counts.length > 1 && (
                 <p>

@@ -80,10 +80,18 @@ describe("fine groups and merge tree", () => {
     expect(mergeTree(fineGroups(centered, 3))).toEqual(mergeTree(fineGroups(centered, 3)));
   });
 
-  it("merges the most similar centres first", () => {
-    // groups 0 and 1 point almost the same way; group 2 points elsewhere, so it joins last
+  it("merges the closest centres first", () => {
+    // groups 0 and 1 sit almost on top of each other; group 2 is far away, so it joins last
     const fineToy = { labels: [0, 1, 1, 1, 2], centroids: [[1, 0.1], [1, 0], [0, 1]] };
     expect(mergeTree(fineToy)).toEqual([[0, 1], [0, 2]]);
+  });
+
+  it("prefers merging two small groups over growing a big one the same distance away (Ward)", () => {
+    // 0 (100 members) and 1 are 0.19 apart, slightly closer than 2 and 3 (one member each, 0.2 apart).
+    // Plain closeness would merge 0 and 1 first; Ward's size penalty merges 2 and 3 first.
+    const labels = [...Array(100).fill(0), 1, 2, 3];
+    const centroids = [[1, 0], [1, 0.19], [0, 1], [0.2, 1]];
+    expect(mergeTree({ labels, centroids })[0]).toEqual([2, 3]);
   });
 
   it("handles fewer vectors than fine groups", () => {

@@ -115,15 +115,9 @@ export function fineGroups(vectors: number[][], seed = 1): Clustering {
   return { labels, centroids: means(vectors, labels, centroids.length).map((m, j) => (m.length ? m : centroids[j])) };
 }
 
-const cosine = (a: number[], b: number[]) => {
-  let dot = 0;
-  for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
-  const n = Math.hypot(...a) * Math.hypot(...b);
-  return n === 0 ? 0 : dot / n;
-};
-
-// Agglomerative merging: repeatedly merge the two groups whose centres have the highest cosine similarity.
-// A merged centre is the size-weighted mean, i.e. the centre of all its members. Returns merges in order.
+// Agglomerative merging with Ward linkage: repeatedly merge the two groups whose merge adds the least spread
+// (sum of squared distances to the centre). That cost, nA·nB / (nA + nB) · |cA − cB|², grows with group size,
+// so big groups stop swallowing everything. A merged centre is the size-weighted mean. Returns merges in order.
 export function mergeTree({ labels, centroids }: Clustering): Merge[] {
   const size = centroids.map((_, j) => labels.filter((l) => l === j).length);
   const centre = centroids.map((c) => [...c]);
@@ -131,12 +125,13 @@ export function mergeTree({ labels, centroids }: Clustering): Merge[] {
   const merges: Merge[] = [];
   while (alive.size > 1) {
     let best: Merge = [-1, -1];
-    let bestSim = -Infinity;
+    let bestCost = Infinity;
     const ids = [...alive];
     for (let a = 0; a < ids.length; a++)
       for (let b = a + 1; b < ids.length; b++) {
-        const sim = cosine(centre[ids[a]], centre[ids[b]]);
-        if (sim > bestSim) [best, bestSim] = [[ids[a], ids[b]], sim];
+        const [i, j] = [ids[a], ids[b]];
+        const cost = ((size[i] * size[j]) / (size[i] + size[j])) * dist2(centre[i], centre[j]);
+        if (cost < bestCost) [best, bestCost] = [[i, j], cost];
       }
     const [into, from] = best;
     const n = size[into] + size[from];
