@@ -1,11 +1,14 @@
-// Runs in a Web Worker so the page stays responsive: embeds texts in the browser, then groups them into themes.
-// The model downloads once from Hugging Face and the browser caches it. No API key or server is involved.
+// Runs in a Web Worker so the page stays responsive: splits reviews into sentences, embeds them in the browser,
+// then groups them into themes. The model downloads once from Hugging Face and the browser caches it.
+// No API key or server is involved.
 import { pipeline, type ProgressInfo } from "@huggingface/transformers";
-import { chooseK, MAX_THEMES, summarize, type Theme } from "./cluster";
+import { centerBy, chooseK, MAX_THEMES, summarize, type Theme } from "./cluster";
+import { splitSentences, type Review, type Sentence } from "./sentences";
 
+export type ThemeView = Omit<Theme, "examples"> & { examples: Sentence[] };
 export type WorkerMessage =
   | { type: "progress"; phase: "download" | "embed" | "cluster"; done: number; total: number }
-  | { type: "done"; k: number; scores: Record<number, number>; themes: Theme[] }
+  | { type: "done"; k: number; scores: Record<number, number>; themes: ThemeView[]; sentences: number; centered: boolean }
   | { type: "error"; message: string };
 
 const MODEL = "Xenova/all-MiniLM-L6-v2";
@@ -16,7 +19,7 @@ const MAX_CHARS = 1000;
 
 const post = (m: WorkerMessage) => postMessage(m);
 
-onmessage = async ({ data: texts }: MessageEvent<string[]>) => {
+onmessage = async ({ data: reviews }: MessageEvent<Review[]>) => {
   try {
     const extract = await pipeline("feature-extraction", MODEL, {
       dtype: "q8",
@@ -25,9 +28,11 @@ onmessage = async ({ data: texts }: MessageEvent<string[]>) => {
       },
     });
 
-    // Each batch is padded to its longest text, so embed in length order and put vectors back in row order.
+    const sentences = splitSentences(reviews);
+    const texts = sentences.map((s) => s.text);
+    // Each batch is padded to its longest text, so embed in length order and put vectors back in sentence order.
     const order = texts.map((_, i) => i).sort((a, b) => texts[a].length - texts[b].length);
-    const vectors: number[][] = new Array(texts.length);
+    let vectors: number[][] = new Array(texts.length);
     for (let i = 0; i < order.length; i += BATCH) {
       const batch = order.slice(i, i + BATCH);
       const out = await extract(
@@ -38,10 +43,19 @@ onmessage = async ({ data: texts }: MessageEvent<string[]>) => {
       post({ type: "progress", phase: "embed", done: i + batch.length, total: texts.length });
     }
 
+    // Per-app centering needs a segment column; without one every app is "" and there is nothing to remove.
+    const apps = sentences.map((s) => s.app);
+    const centered = apps.some(Boolean);
+    if (centered) vectors = centerBy(vectors, apps);
+
     const { k, scores, clustering } = chooseK(vectors, 1, (k) =>
       post({ type: "progress", phase: "cluster", done: k, total: MAX_THEMES }),
     );
-    post({ type: "done", k, scores, themes: summarize(vectors, clustering) });
+    const themes = summarize(vectors, clustering, sentences.map((s) => s.row), apps).map((t) => ({
+      ...t,
+      examples: t.examples.map((i) => sentences[i]),
+    }));
+    post({ type: "done", k, scores, themes, sentences: sentences.length, centered });
   } catch (e) {
     post({ type: "error", message: (e as Error).message });
   }
