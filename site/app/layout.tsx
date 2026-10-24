@@ -12,7 +12,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className="h-full antialiased"
     >
-      <body className="min-h-full flex flex-col">
+      {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body> before React hydrates. */}
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         {children}
         {/* Required credit, from docs/data_credit.md */}
         <footer className="px-4 py-3 text-xs text-zinc-500">

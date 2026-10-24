@@ -1,5 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { checkColumn, MAX_SEGMENTS } from "./mapping";
+import { checkColumn, guessMapping, MAX_SEGMENTS } from "./mapping";
+
+describe("guessMapping", () => {
+  it("picks columns by name, ignoring case and spaces", () => {
+    expect(guessMapping(["id", " Text ", "RATING", "Date", "Segment"])).toEqual({
+      text: " Text ",
+      rating: "RATING",
+      date: "Date",
+      segment: "Segment",
+    });
+  });
+
+  it("uses app as the segment when there is no segment column", () => {
+    expect(guessMapping(["id", "domain", "app", "title", "text", "rating"])).toEqual({
+      text: "text",
+      rating: "rating",
+      date: "",
+      segment: "app",
+    });
+  });
+
+  it("prefers segment over app", () => {
+    expect(guessMapping(["text", "app", "segment"]).segment).toBe("segment");
+  });
+
+  it("falls back to the first column for text and none for the rest", () => {
+    expect(guessMapping(["comment", "score"])).toEqual({ text: "comment", rating: "", date: "", segment: "" });
+  });
+});
 
 const repeat = (value: string, n: number) => Array(n).fill(value);
 

@@ -1,5 +1,6 @@
 export type Field = "text" | "rating" | "date" | "segment";
 export type Check = { ok: boolean; message: string };
+export type Mapping = Record<Field, string>;
 
 export const MIN_TEXT_SHARE = 0.9; // "most rows": at least 90% must have text
 export const MAX_SEGMENTS = 50;
@@ -7,6 +8,18 @@ export const MAX_SEGMENTS = 50;
 const pass = (message: string): Check => ({ ok: true, message });
 const fail = (message: string): Check => ({ ok: false, message });
 const count = (n: number) => (n === 1 ? "1 value" : `${n} values`);
+
+// Picks columns whose names match a field, ignoring case. Text falls back to the first column; the rest to none.
+export function guessMapping(columns: string[]): Mapping {
+  const find = (...names: string[]) =>
+    names.map((n) => columns.find((c) => c.trim().toLowerCase() === n)).find(Boolean) ?? "";
+  return {
+    text: find("text") || columns[0],
+    rating: find("rating"),
+    date: find("date"),
+    segment: find("segment", "app"),
+  };
+}
 
 // Checks whether a column's values fit the field it is mapped to. Empty cells are allowed in optional fields.
 export function checkColumn(field: Field, values: string[]): Check {

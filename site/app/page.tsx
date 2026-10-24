@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { MAX_ROWS, parseCsv, type ParsedCsv } from "@/lib/csv";
-import { checkColumn, type Field } from "@/lib/mapping";
+import { checkColumn, guessMapping, type Field, type Mapping } from "@/lib/mapping";
 
 const OPTIONAL = ["rating", "date", "segment"] as const;
 const FIELDS: Field[] = ["text", ...OPTIONAL];
-type Mapping = Record<Field, string>;
 const label = (field: Field) => field[0].toUpperCase() + field.slice(1);
 
 export default function Home() {
@@ -18,12 +17,7 @@ export default function Home() {
     try {
       const parsed = parseCsv(text);
       setCsv(parsed);
-      setMapping({
-        text: parsed.columns.includes("text") ? "text" : parsed.columns[0],
-        rating: "",
-        date: "",
-        segment: "",
-      });
+      setMapping(guessMapping(parsed.columns));
       setError("");
     } catch (e) {
       setCsv(null);
@@ -102,7 +96,10 @@ export default function Home() {
           </fieldset>
 
           {/* No step after mapping exists yet (R2); for now the button only shows whether the text column is ready. */}
-          <button disabled={!checks.text?.ok}>Continue</button>
+          <div>
+            <button disabled={!checks.text?.ok}>Continue</button>
+            {checks.rating && !checks.rating.ok && <p>Rating will be ignored.</p>}
+          </div>
 
           <table>
             <caption>First 20 rows</caption>
