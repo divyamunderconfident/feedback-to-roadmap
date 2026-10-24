@@ -4,14 +4,14 @@
 
 export const FINE_GROUPS = 40;
 export const SAMPLE_SIZE = 4000; // fine groups are fitted on a sample, then every vector joins its nearest group
-export const EXAMPLES_PER_THEME = 3;
+export const SAMPLES_PER_THEME = 30; // sentences sent to the model when naming a theme; the page shows the first 3
 
-export type Clustering = { labels: number[]; centroids: number[][] };
+export type Clustering = { labels: number[]; centroids: number[][]; groups?: number[][] };
 export type Merge = [into: number, from: number]; // fine-group ids; `from` joins `into`
 export type Theme = {
+  groups: number[]; // the fine groups the theme is made of: the same theme at any slider setting has the same list
   sentences: number;
   reviews: number; // distinct reviews with at least one sentence in the theme
-  apps: [string, number][]; // sentences per app, most first
   examples: number[]; // sentence indices, nearest the centre, each from a different review
 };
 
@@ -143,43 +143,44 @@ export function mergeTree({ labels, centroids }: Clustering): Merge[] {
   return merges;
 }
 
-// Applies merges until `themes` groups are left. Labels are renumbered 0..themes-1; centres are member means.
+// Applies merges until `themes` groups are left. Labels are renumbered 0..themes-1; centres are member means;
+// groups[j] lists the fine groups that make up theme j.
 export function cut(vectors: number[][], fine: Clustering, merges: Merge[], themes: number): Clustering {
-  const groups = merges.length + 1;
+  const count = merges.length + 1;
   const root = fine.centroids.map((_, j) => j);
   const find = (j: number): number => (root[j] === j ? j : (root[j] = find(root[j])));
-  merges.slice(0, Math.max(0, groups - themes)).forEach(([into, from]) => (root[find(from)] = find(into)));
+  merges.slice(0, Math.max(0, count - themes)).forEach(([into, from]) => (root[find(from)] = find(into)));
   const ids = new Map<number, number>();
+  const groups: number[][] = [];
   const labels = fine.labels.map((l) => {
     const r = find(l);
     if (!ids.has(r)) ids.set(r, ids.size);
-    return ids.get(r)!;
+    const id = ids.get(r)!;
+    if (!(groups[id] ??= []).includes(l)) groups[id].push(l);
+    return id;
   });
-  return { labels, centroids: means(vectors, labels, ids.size) };
+  return { labels, centroids: means(vectors, labels, ids.size), groups: groups.map((g) => g.sort((a, b) => a - b)) };
 }
 
 // Themes with the most reviews first. Examples are the sentences nearest the centre (the most typical ones),
 // at most one per review.
 export function summarize(
   vectors: number[][],
-  { labels, centroids }: Clustering,
+  { labels, centroids, groups }: Clustering,
   reviews: number[],
-  apps: string[],
 ): Theme[] {
   return centroids
     .map((c, j) => {
       const members = labels.flatMap((l, i) => (l === j ? [i] : []));
-      const appCounts = new Map<string, number>();
-      members.forEach((i) => appCounts.set(apps[i], (appCounts.get(apps[i]) ?? 0) + 1));
       const seen = new Set<number>();
       const examples = members
         .sort((x, y) => dist2(vectors[x], c) - dist2(vectors[y], c))
         .filter((i) => !seen.has(reviews[i]) && seen.add(reviews[i]))
-        .slice(0, EXAMPLES_PER_THEME);
+        .slice(0, SAMPLES_PER_THEME);
       return {
+        groups: groups?.[j] ?? [j],
         sentences: members.length,
         reviews: new Set(members.map((i) => reviews[i])).size,
-        apps: [...appCounts].sort((a, b) => b[1] - a[1]),
         examples,
       };
     })

@@ -47,6 +47,19 @@ describe("chat", () => {
     expect(f).toHaveBeenCalledTimes(1);
   });
 
+  it("reports the HTTP status, so a used-up quota (429) can be told apart", async () => {
+    const f = fakeFetch(new Response("rate limited", { status: 429 }));
+    await expect(chat("gemini", KEY, MSGS, { fetchFn: f })).rejects.toMatchObject({ status: 429 });
+  });
+
+  it("asks for JSON only when told to", async () => {
+    const f = fakeFetch(reply("{}"), reply("OK"));
+    await chat("gemini", KEY, MSGS, { json: true, fetchFn: f });
+    await chat("gemini", KEY, MSGS, { fetchFn: f });
+    expect(JSON.parse(f.mock.calls[0][1].body).response_format).toEqual({ type: "json_object" });
+    expect(JSON.parse(f.mock.calls[1][1].body).response_format).toBeUndefined();
+  });
+
   it("does not fall back for Gemini, which the proxy does not serve", async () => {
     const f = fakeFetch(new TypeError(`Failed to fetch ${KEY}`));
     await expect(chat("gemini", KEY, MSGS, { fetchFn: f })).rejects.toThrow("gemini: Failed to fetch [REDACTED]");

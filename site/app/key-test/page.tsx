@@ -2,25 +2,8 @@
 
 // A small page to check bring-your-own-key calls work. The key is kept only in this browser's localStorage.
 import { useEffect, useState } from "react";
+import { loadKey as load, PROVIDERS, saveKey as save } from "@/lib/keys";
 import { chat, MODELS, PROXIED, type Provider, type Route } from "@/lib/llm";
-
-const PROVIDERS: Provider[] = ["gemini", "groq"];
-const storageKey = (p: Provider) => `f2r.key.${p}`;
-
-// localStorage can be missing or blocked (private windows, blocked site data); the page must still work.
-const load = (p: Provider) => {
-  try {
-    return localStorage.getItem(storageKey(p)) ?? "";
-  } catch {
-    return "";
-  }
-};
-const save = (p: Provider, key: string) => {
-  try {
-    if (key) localStorage.setItem(storageKey(p), key);
-    else localStorage.removeItem(storageKey(p));
-  } catch {}
-};
 
 export default function KeyTest() {
   const [provider, setProvider] = useState<Provider>("gemini");

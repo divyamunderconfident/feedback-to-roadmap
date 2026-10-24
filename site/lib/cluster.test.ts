@@ -71,6 +71,15 @@ describe("fine groups and merge tree", () => {
     }
   });
 
+  it("lists the fine groups behind each theme, the same at every cut where the theme exists", () => {
+    const at8 = cut(centered, fine, merges, 8);
+    expect(at8.groups!.flat().sort((a, b) => a - b)).toEqual([...Array(FINE_GROUPS).keys()]);
+    at8.labels.forEach((l, i) => expect(at8.groups![l]).toContain(fine.labels[i]));
+    // going from 9 themes to 8 merges two of them; the other 7 keep the same group lists
+    const at9 = new Set(cut(centered, fine, merges, 9).groups!.map(String));
+    expect(at8.groups!.filter((g) => at9.has(String(g)))).toHaveLength(7);
+  });
+
   it("cut at 40 is the fine groups themselves", () => {
     const pairs = new Set(groupsAt(40).map((l, i) => `${l}:${fine.labels[i]}`));
     expect(pairs.size).toBe(FINE_GROUPS);
@@ -102,25 +111,22 @@ describe("fine groups and merge tree", () => {
 });
 
 describe("summarize", () => {
-  it("counts sentences, distinct reviews and apps, with examples from different reviews", () => {
-    const themes = summarize(centered, kmeans(centered, 8), reviews, apps);
+  it("counts sentences and distinct reviews, with examples from different reviews", () => {
+    const themes = summarize(centered, kmeans(centered, 8), reviews);
     expect(themes).toHaveLength(8);
     for (const t of themes) {
       expect(t.sentences).toBe(30);
       expect(t.reviews).toBe(15); // two sentences per review
-      expect(t.apps).toEqual([expect.any(Array), expect.any(Array), expect.any(Array)]);
-      expect(t.apps.map(([, n]) => n)).toEqual([10, 10, 10]);
-      expect(t.examples).toHaveLength(3);
-      expect(new Set(t.examples.map((i) => reviews[i])).size).toBe(3);
+      expect(t.examples).toHaveLength(15); // up to 30 samples, one per review; each theme has 15 reviews
+      expect(new Set(t.examples.map((i) => reviews[i])).size).toBe(15);
       expect(new Set(t.examples.map((i) => groups[i])).size).toBe(1);
     }
   });
 
   it("sorts by distinct reviews and skips a second sentence from the same review", () => {
     const vs = [[0, 1], [0, 1.01], [0, 2], [10, 0]];
-    const themes = summarize(vs, { labels: [0, 0, 0, 1], centroids: [[0, 1], [10, 0]] }, [5, 5, 6, 7], ["a", "a", "b", "a"]);
+    const themes = summarize(vs, { labels: [0, 0, 0, 1], centroids: [[0, 1], [10, 0]] }, [5, 5, 6, 7]);
     expect(themes.map((t) => [t.sentences, t.reviews])).toEqual([[3, 2], [1, 1]]);
     expect(themes[0].examples).toEqual([0, 2]);
-    expect(themes[0].apps).toEqual([["a", 2], ["b", 1]]);
   });
 });

@@ -9,6 +9,19 @@ const pass = (message: string): Check => ({ ok: true, message });
 const fail = (message: string): Check => ({ ok: false, message });
 const count = (n: number) => (n === 1 ? "1 value" : `${n} values`);
 
+// Milliseconds since 1970, or null. Date.parse alone accepts bare numbers like "5", so also require a 4-digit year.
+// shortcut: Date.parse handles ISO dates reliably but other formats vary by browser; add explicit formats if real files need them.
+export function parseDate(v: string) {
+  const t = Date.parse(v);
+  return /\d{4}/.test(v) && !Number.isNaN(t) ? t : null;
+}
+
+// A rating from 1 to 5, or null.
+export function parseRating(v: string) {
+  const n = Number(v);
+  return v.trim() && n >= 1 && n <= 5 ? n : null;
+}
+
 // Picks columns whose names match a field, ignoring case. Text falls back to the first column; the rest to none.
 export function guessMapping(columns: string[]): Mapping {
   const find = (...names: string[]) =>
@@ -33,13 +46,11 @@ export function checkColumn(field: Field, values: string[]): Check {
   }
   if (filled.length === 0) return fail("This column is empty.");
   if (field === "rating") {
-    const bad = filled.filter((v) => !(Number(v) >= 1 && Number(v) <= 5)).length;
+    const bad = filled.filter((v) => parseRating(v) === null).length;
     return bad ? fail(`${count(bad)} can't be read as a rating from 1 to 5.`) : pass("All ratings are from 1 to 5.");
   }
   if (field === "date") {
-    // Date.parse alone accepts bare numbers like "5", so also require a 4-digit year.
-    // shortcut: Date.parse handles ISO dates reliably but other formats vary by browser; add explicit formats if real files need them.
-    const bad = filled.filter((v) => !/\d{4}/.test(v) || Number.isNaN(Date.parse(v))).length;
+    const bad = filled.filter((v) => parseDate(v) === null).length;
     return bad ? fail(`${count(bad)} can't be read as a date.`) : pass("All values are dates.");
   }
   const distinct = new Set(filled).size;
