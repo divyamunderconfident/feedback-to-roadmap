@@ -26,6 +26,11 @@ const SHOWN_EXAMPLES = 3;
 const shorten = (s: string) => (s.length > 200 ? s.slice(0, 200) + "…" : s);
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
+// A theme's cache key for names and matches: the same theme at any slider setting has the same fine groups.
+const themeKey = (provider: Provider | "", groups: number[]) =>
+  `${provider}:${provider && MODELS[provider]}:${groups.join(",")}`;
+const EVAL_COUNTS = [12, 20]; // theme counts saved by the dev-only evaluation export
+
 const PERCENTILES = [0.1, 0.25, 0.5, 0.75, 0.9];
 const spread = (values: number[]) => PERCENTILES.map((p) => percentile(values, p).toFixed(2)).join(" / ");
 
@@ -255,7 +260,7 @@ export default function Home() {
     if (!result) return [];
     const rowOf = (s: number) => result.sentences[s].row;
     return result.themesByCount[shownCount].map((t) => {
-      const key = `${provider}:${provider && MODELS[provider]}:${t.groups.join(",")}`;
+      const key = themeKey(provider, t.groups);
       const match = matches.get(key);
       const all = match?.members ?? result.fineLabels.flatMap((l, s) => (t.groups.includes(l) ? [s] : []));
       const { matching, loose } =
@@ -303,6 +308,30 @@ export default function Home() {
         themes: toMatch.map((t) => ({ key: t.key, problem: cache.get(t.key)!.problem, groups: t.groups })),
       } satisfies WorkerRequest);
   }
+  // Development only: saves this run's own outputs for eval/match_eval.py, which compares them with the AWARE labels
+  // offline. Every theme at each count in EVAL_COUNTS must be named and matched first.
+  async function exportEval() {
+    if (!result || !csv) return;
+    const counts: Record<number, unknown[]> = {};
+    for (const n of EVAL_COUNTS) {
+      const missing = (result.themesByCount[n] ?? []).filter((t) => !matches.has(themeKey(provider, t.groups)));
+      if (!result.themesByCount[n] || missing.length)
+        return setNamingNote(`Export needs every theme named at ${n} themes (${missing.length} missing).`);
+      counts[n] = result.themesByCount[n].map((t) => {
+        const key = themeKey(provider, t.groups);
+        const { name, problem, actionable } = names.get(key)!;
+        return { name, problem, actionable, ...matches.get(key)! };
+      });
+    }
+    const body = JSON.stringify({
+      model: provider && MODELS[provider],
+      sentences: result.sentences.map((s) => ({ row: s.row, review: csv.rows[s.row].id ?? null, text: s.text })),
+      counts,
+    });
+    const res = await fetch("/api/eval-export", { method: "POST", headers: { "content-type": "application/json" }, body });
+    setNamingNote(res.ok ? `Saved evaluation data (${body.length.toLocaleString()} characters).` : `Export failed: ${res.status}`);
+  }
+
   const status = (f: Field) =>
     checks[f] && <small role={checks[f].ok ? undefined : "alert"}> {checks[f].message}</small>;
 
@@ -430,6 +459,11 @@ export default function Home() {
                 <button disabled={!provider || naming !== null} onClick={nameCurrent}>
                   Name themes
                 </button>{" "}
+                {process.env.NODE_ENV === "development" && (
+                  <button disabled={naming !== null} onClick={exportEval}>
+                    Export evaluation data
+                  </button>
+                )}{" "}
                 {naming && `Naming theme ${Math.min(naming.done + 1, naming.total)} of ${naming.total}…`}
                 {namingNote && <span role="alert">{namingNote}</span>}
               </p>

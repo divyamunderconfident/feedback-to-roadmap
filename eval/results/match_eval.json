@@ -1,0 +1,1552 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "sentences": 21761,
+  "labelled_sentences": 5853,
+  "counts": {
+    "12": {
+      "0.25": {
+        "themes": [
+          {
+            "name": "App praise and enjoyment",
+            "actionable": false,
+            "matching": 1302,
+            "labelled": 206,
+            "category": "general",
+            "precision": 0.27184466019417475,
+            "recall": 0.03935347856640899
+          },
+          {
+            "name": "Lack of text formatting options",
+            "actionable": true,
+            "matching": 692,
+            "labelled": 336,
+            "category": "usability",
+            "precision": 0.44642857142857145,
+            "recall": 0.0759493670886076
+          },
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 379,
+            "labelled": 74,
+            "category": "general",
+            "precision": 0.3918918918918919,
+            "recall": 0.020379479971890373
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 213,
+            "labelled": 69,
+            "category": "usability",
+            "precision": 0.463768115942029,
+            "recall": 0.01620253164556962
+          },
+          {
+            "name": "Notification and account management issues",
+            "actionable": true,
+            "matching": 1300,
+            "labelled": 418,
+            "category": "usability",
+            "precision": 0.3588516746411483,
+            "recall": 0.0759493670886076
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 920,
+            "labelled": 279,
+            "category": "general",
+            "precision": 0.2903225806451613,
+            "recall": 0.05692199578355587
+          },
+          {
+            "name": "In-game currency acquisition is too slow",
+            "actionable": true,
+            "matching": 424,
+            "labelled": 107,
+            "category": "cost",
+            "precision": 0.4392523364485981,
+            "recall": 0.10633484162895927
+          },
+          {
+            "name": "Call audio volume and quality issues",
+            "actionable": true,
+            "matching": 1088,
+            "labelled": 477,
+            "category": "usability",
+            "precision": 0.40670859538784065,
+            "recall": 0.09822784810126582
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 1026,
+            "labelled": 234,
+            "category": "usability",
+            "precision": 0.29914529914529914,
+            "recall": 0.035443037974683546
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 538,
+            "labelled": 125,
+            "category": "general",
+            "precision": 0.272,
+            "recall": 0.023893183415319746
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 761,
+            "labelled": 228,
+            "category": "usability",
+            "precision": 0.4166666666666667,
+            "recall": 0.04810126582278481
+          }
+        ],
+        "macro": {
+          "precision": 0.3688073083992165,
+          "recall": 0.05425058155342302,
+          "f1": 0.09458757979457605
+        }
+      },
+      "0.30": {
+        "themes": [
+          {
+            "name": "App praise and enjoyment",
+            "actionable": false,
+            "matching": 538,
+            "labelled": 98,
+            "category": "general",
+            "precision": 0.35714285714285715,
+            "recall": 0.024595924104005622
+          },
+          {
+            "name": "Lack of text formatting options",
+            "actionable": true,
+            "matching": 381,
+            "labelled": 189,
+            "category": "usability",
+            "precision": 0.43386243386243384,
+            "recall": 0.04151898734177215
+          },
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 195,
+            "labelled": 36,
+            "category": "general",
+            "precision": 0.3888888888888889,
+            "recall": 0.009838369641602248
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 103,
+            "labelled": 30,
+            "category": "usability",
+            "precision": 0.4,
+            "recall": 0.0060759493670886075
+          },
+          {
+            "name": "Notification and account management issues",
+            "actionable": true,
+            "matching": 928,
+            "labelled": 289,
+            "category": "usability",
+            "precision": 0.3875432525951557,
+            "recall": 0.05670886075949367
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 631,
+            "labelled": 184,
+            "category": "general",
+            "precision": 0.27717391304347827,
+            "recall": 0.035839775122979624
+          },
+          {
+            "name": "In-game currency acquisition is too slow",
+            "actionable": true,
+            "matching": 343,
+            "labelled": 77,
+            "category": "cost",
+            "precision": 0.33766233766233766,
+            "recall": 0.058823529411764705
+          },
+          {
+            "name": "Call audio volume and quality issues",
+            "actionable": true,
+            "matching": 851,
+            "labelled": 401,
+            "category": "usability",
+            "precision": 0.4014962593516209,
+            "recall": 0.08151898734177215
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 1017,
+            "labelled": 233,
+            "category": "usability",
+            "precision": 0.30042918454935624,
+            "recall": 0.035443037974683546
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 412,
+            "labelled": 97,
+            "category": "general",
+            "precision": 0.27835051546391754,
+            "recall": 0.018973998594518624
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 747,
+            "labelled": 222,
+            "category": "usability",
+            "precision": 0.42342342342342343,
+            "recall": 0.04759493670886076
+          }
+        ],
+        "macro": {
+          "precision": 0.3623611878166791,
+          "recall": 0.03790294148804924,
+          "f1": 0.06862745818973573
+        }
+      },
+      "0.35": {
+        "themes": [
+          {
+            "name": "App praise and enjoyment",
+            "actionable": false,
+            "matching": 158,
+            "labelled": 26,
+            "category": "usability",
+            "precision": 0.34615384615384615,
+            "recall": 0.004556962025316456
+          },
+          {
+            "name": "Lack of text formatting options",
+            "actionable": true,
+            "matching": 157,
+            "labelled": 78,
+            "category": "usability",
+            "precision": 0.3974358974358974,
+            "recall": 0.01569620253164557
+          },
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 99,
+            "labelled": 18,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.006324666198172874
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 32,
+            "labelled": 8,
+            "category": "general",
+            "precision": 0.375,
+            "recall": 0.0021082220660576245
+          },
+          {
+            "name": "Notification and account management issues",
+            "actionable": true,
+            "matching": 554,
+            "labelled": 157,
+            "category": "usability",
+            "precision": 0.4140127388535032,
+            "recall": 0.03291139240506329
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 359,
+            "labelled": 117,
+            "category": "general",
+            "precision": 0.29914529914529914,
+            "recall": 0.024595924104005622
+          },
+          {
+            "name": "In-game currency acquisition is too slow",
+            "actionable": true,
+            "matching": 274,
+            "labelled": 64,
+            "category": "cost",
+            "precision": 0.296875,
+            "recall": 0.042986425339366516
+          },
+          {
+            "name": "Call audio volume and quality issues",
+            "actionable": true,
+            "matching": 562,
+            "labelled": 299,
+            "category": "usability",
+            "precision": 0.3745819397993311,
+            "recall": 0.05670886075949367
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 999,
+            "labelled": 229,
+            "category": "usability",
+            "precision": 0.30131004366812225,
+            "recall": 0.034936708860759495
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 288,
+            "labelled": 70,
+            "category": "general",
+            "precision": 0.2571428571428571,
+            "recall": 0.012649332396345749
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 708,
+            "labelled": 211,
+            "category": "usability",
+            "precision": 0.43601895734597157,
+            "recall": 0.04658227848101266
+          }
+        ],
+        "macro": {
+          "precision": 0.36342514359498435,
+          "recall": 0.025459725015203594,
+          "f1": 0.04758582792180554
+        }
+      },
+      "0.40": {
+        "themes": [
+          {
+            "name": "App praise and enjoyment",
+            "actionable": false,
+            "matching": 30,
+            "labelled": 4,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.0014054813773717498
+          },
+          {
+            "name": "Lack of text formatting options",
+            "actionable": true,
+            "matching": 46,
+            "labelled": 21,
+            "category": "general",
+            "precision": 0.42857142857142855,
+            "recall": 0.006324666198172874
+          },
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 42,
+            "labelled": 10,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.0035137034434293743
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 8,
+            "labelled": 4,
+            "category": "effectiveness",
+            "precision": 0.25,
+            "recall": 0.001160092807424594
+          },
+          {
+            "name": "Notification and account management issues",
+            "actionable": true,
+            "matching": 262,
+            "labelled": 76,
+            "category": "usability",
+            "precision": 0.39473684210526316,
+            "recall": 0.015189873417721518
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 185,
+            "labelled": 57,
+            "category": "reliability",
+            "precision": 0.2631578947368421,
+            "recall": 0.045317220543806644
+          },
+          {
+            "name": "In-game currency acquisition is too slow",
+            "actionable": true,
+            "matching": 204,
+            "labelled": 49,
+            "category": "cost",
+            "precision": 0.2857142857142857,
+            "recall": 0.03167420814479638
+          },
+          {
+            "name": "Call audio volume and quality issues",
+            "actionable": true,
+            "matching": 300,
+            "labelled": 173,
+            "category": "usability",
+            "precision": 0.36416184971098264,
+            "recall": 0.03189873417721519
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 972,
+            "labelled": 217,
+            "category": "usability",
+            "precision": 0.30414746543778803,
+            "recall": 0.033417721518987344
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 165,
+            "labelled": 36,
+            "category": "general",
+            "precision": 0.2777777777777778,
+            "recall": 0.007027406886858749
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 636,
+            "labelled": 194,
+            "category": "usability",
+            "precision": 0.4175257731958763,
+            "recall": 0.0410126582278481
+          }
+        ],
+        "macro": {
+          "precision": 0.3623448470227495,
+          "recall": 0.019812887885784777,
+          "f1": 0.03757138570947317
+        }
+      },
+      "0.45": {
+        "themes": [
+          {
+            "name": "App praise and enjoyment",
+            "actionable": false,
+            "matching": 3,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "Lack of text formatting options",
+            "actionable": true,
+            "matching": 18,
+            "labelled": 4,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.0014054813773717498
+          },
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 17,
+            "labelled": 3,
+            "category": "efficiency",
+            "precision": 0.3333333333333333,
+            "recall": 0.0015698587127158557
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 1,
+            "labelled": 1,
+            "category": "efficiency",
+            "precision": 1.0,
+            "recall": 0.0015698587127158557
+          },
+          {
+            "name": "Notification and account management issues",
+            "actionable": true,
+            "matching": 78,
+            "labelled": 24,
+            "category": "usability",
+            "precision": 0.5,
+            "recall": 0.0060759493670886075
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 81,
+            "labelled": 25,
+            "category": "effectiveness",
+            "precision": 0.24,
+            "recall": 0.0069605568445475635
+          },
+          {
+            "name": "In-game currency acquisition is too slow",
+            "actionable": true,
+            "matching": 132,
+            "labelled": 35,
+            "category": "cost",
+            "precision": 0.37142857142857144,
+            "recall": 0.029411764705882353
+          },
+          {
+            "name": "Call audio volume and quality issues",
+            "actionable": true,
+            "matching": 132,
+            "labelled": 75,
+            "category": "usability",
+            "precision": 0.44,
+            "recall": 0.016708860759493672
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 895,
+            "labelled": 196,
+            "category": "usability",
+            "precision": 0.30612244897959184,
+            "recall": 0.030379746835443037
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 81,
+            "labelled": 24,
+            "category": "general",
+            "precision": 0.2916666666666667,
+            "recall": 0.004919184820801124
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 528,
+            "labelled": 171,
+            "category": "usability",
+            "precision": 0.4152046783625731,
+            "recall": 0.035949367088607596
+          }
+        ],
+        "macro": {
+          "precision": 0.43977556987707367,
+          "recall": 0.01349506292246674,
+          "f1": 0.02618655857141952
+        }
+      }
+    },
+    "20": {
+      "0.25": {
+        "themes": [
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 379,
+            "labelled": 74,
+            "category": "general",
+            "precision": 0.3918918918918919,
+            "recall": 0.020379479971890373
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "App Hesitation and Criticism",
+            "actionable": false,
+            "matching": 1807,
+            "labelled": 319,
+            "category": "general",
+            "precision": 0.25705329153605017,
+            "recall": 0.05762473647224174
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 213,
+            "labelled": 69,
+            "category": "usability",
+            "precision": 0.463768115942029,
+            "recall": 0.01620253164556962
+          },
+          {
+            "name": "App appreciation and long-term use",
+            "actionable": false,
+            "matching": 1383,
+            "labelled": 224,
+            "category": "usability",
+            "precision": 0.29017857142857145,
+            "recall": 0.03291139240506329
+          },
+          {
+            "name": "Lack of folder organization",
+            "actionable": true,
+            "matching": 370,
+            "labelled": 152,
+            "category": "usability",
+            "precision": 0.4605263157894737,
+            "recall": 0.035443037974683546
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 920,
+            "labelled": 279,
+            "category": "general",
+            "precision": 0.2903225806451613,
+            "recall": 0.05692199578355587
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 1026,
+            "labelled": 234,
+            "category": "usability",
+            "precision": 0.29914529914529914,
+            "recall": 0.035443037974683546
+          },
+          {
+            "name": "Missing message and email notifications",
+            "actionable": true,
+            "matching": 895,
+            "labelled": 317,
+            "category": "usability",
+            "precision": 0.3911671924290221,
+            "recall": 0.06278481012658228
+          },
+          {
+            "name": "Call Screen Behavior Issues",
+            "actionable": true,
+            "matching": 723,
+            "labelled": 194,
+            "category": "usability",
+            "precision": 0.39690721649484534,
+            "recall": 0.0389873417721519
+          },
+          {
+            "name": "Account compromise and lack of access",
+            "actionable": true,
+            "matching": 444,
+            "labelled": 153,
+            "category": "security",
+            "precision": 0.3137254901960784,
+            "recall": 0.16326530612244897
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 538,
+            "labelled": 125,
+            "category": "general",
+            "precision": 0.272,
+            "recall": 0.023893183415319746
+          },
+          {
+            "name": "Pricing and subscription models",
+            "actionable": true,
+            "matching": 428,
+            "labelled": 161,
+            "category": "cost",
+            "precision": 0.6335403726708074,
+            "recall": 0.23076923076923078
+          },
+          {
+            "name": "Cursor jumping while editing text",
+            "actionable": true,
+            "matching": 542,
+            "labelled": 202,
+            "category": "usability",
+            "precision": 0.5396039603960396,
+            "recall": 0.05518987341772152
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 761,
+            "labelled": 228,
+            "category": "usability",
+            "precision": 0.4166666666666667,
+            "recall": 0.04810126582278481
+          },
+          {
+            "name": "Changing review ratings",
+            "actionable": false,
+            "matching": 203,
+            "labelled": 37,
+            "category": "general",
+            "precision": 0.5405405405405406,
+            "recall": 0.014054813773717497
+          },
+          {
+            "name": "Audio routing and volume issues",
+            "actionable": true,
+            "matching": 434,
+            "labelled": 281,
+            "category": "usability",
+            "precision": 0.43416370106761565,
+            "recall": 0.061772151898734175
+          },
+          {
+            "name": "Photo sharing and uploading issues",
+            "actionable": true,
+            "matching": 426,
+            "labelled": 239,
+            "category": "usability",
+            "precision": 0.4686192468619247,
+            "recall": 0.05670886075949367
+          },
+          {
+            "name": "Variety and real-world tree planting",
+            "actionable": true,
+            "matching": 330,
+            "labelled": 67,
+            "category": "general",
+            "precision": 0.2835820895522388,
+            "recall": 0.013352073085031623
+          },
+          {
+            "name": "Dark mode and color scheme",
+            "actionable": true,
+            "matching": 270,
+            "labelled": 170,
+            "category": "usability",
+            "precision": 0.48823529411764705,
+            "recall": 0.0420253164556962
+          }
+        ],
+        "macro": {
+          "precision": 0.4016651493353633,
+          "recall": 0.05609633892876848,
+          "f1": 0.09844403660270278
+        }
+      },
+      "0.30": {
+        "themes": [
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 195,
+            "labelled": 36,
+            "category": "general",
+            "precision": 0.3888888888888889,
+            "recall": 0.009838369641602248
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "App Hesitation and Criticism",
+            "actionable": false,
+            "matching": 1642,
+            "labelled": 290,
+            "category": "general",
+            "precision": 0.2655172413793103,
+            "recall": 0.054111033028812365
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 103,
+            "labelled": 30,
+            "category": "usability",
+            "precision": 0.4,
+            "recall": 0.0060759493670886075
+          },
+          {
+            "name": "App appreciation and long-term use",
+            "actionable": false,
+            "matching": 1378,
+            "labelled": 224,
+            "category": "usability",
+            "precision": 0.29017857142857145,
+            "recall": 0.03291139240506329
+          },
+          {
+            "name": "Lack of folder organization",
+            "actionable": true,
+            "matching": 193,
+            "labelled": 81,
+            "category": "usability",
+            "precision": 0.4444444444444444,
+            "recall": 0.018227848101265823
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 631,
+            "labelled": 184,
+            "category": "general",
+            "precision": 0.27717391304347827,
+            "recall": 0.035839775122979624
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 1017,
+            "labelled": 233,
+            "category": "usability",
+            "precision": 0.30042918454935624,
+            "recall": 0.035443037974683546
+          },
+          {
+            "name": "Missing message and email notifications",
+            "actionable": true,
+            "matching": 701,
+            "labelled": 258,
+            "category": "usability",
+            "precision": 0.39147286821705424,
+            "recall": 0.05113924050632911
+          },
+          {
+            "name": "Call Screen Behavior Issues",
+            "actionable": true,
+            "matching": 579,
+            "labelled": 173,
+            "category": "usability",
+            "precision": 0.4046242774566474,
+            "recall": 0.035443037974683546
+          },
+          {
+            "name": "Account compromise and lack of access",
+            "actionable": true,
+            "matching": 344,
+            "labelled": 125,
+            "category": "security",
+            "precision": 0.352,
+            "recall": 0.14965986394557823
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 412,
+            "labelled": 97,
+            "category": "general",
+            "precision": 0.27835051546391754,
+            "recall": 0.018973998594518624
+          },
+          {
+            "name": "Pricing and subscription models",
+            "actionable": true,
+            "matching": 288,
+            "labelled": 124,
+            "category": "cost",
+            "precision": 0.6451612903225806,
+            "recall": 0.18099547511312217
+          },
+          {
+            "name": "Cursor jumping while editing text",
+            "actionable": true,
+            "matching": 420,
+            "labelled": 154,
+            "category": "usability",
+            "precision": 0.5454545454545454,
+            "recall": 0.042531645569620254
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 747,
+            "labelled": 222,
+            "category": "usability",
+            "precision": 0.42342342342342343,
+            "recall": 0.04759493670886076
+          },
+          {
+            "name": "Changing review ratings",
+            "actionable": false,
+            "matching": 119,
+            "labelled": 24,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.008432888264230498
+          },
+          {
+            "name": "Audio routing and volume issues",
+            "actionable": true,
+            "matching": 369,
+            "labelled": 250,
+            "category": "usability",
+            "precision": 0.42,
+            "recall": 0.053164556962025315
+          },
+          {
+            "name": "Photo sharing and uploading issues",
+            "actionable": true,
+            "matching": 372,
+            "labelled": 215,
+            "category": "usability",
+            "precision": 0.4558139534883721,
+            "recall": 0.04962025316455696
+          },
+          {
+            "name": "Variety and real-world tree planting",
+            "actionable": true,
+            "matching": 321,
+            "labelled": 66,
+            "category": "general",
+            "precision": 0.2878787878787879,
+            "recall": 0.013352073085031623
+          },
+          {
+            "name": "Dark mode and color scheme",
+            "actionable": true,
+            "matching": 247,
+            "labelled": 163,
+            "category": "usability",
+            "precision": 0.4785276073619632,
+            "recall": 0.03949367088607595
+          }
+        ],
+        "macro": {
+          "precision": 0.3973336585684917,
+          "recall": 0.0464657392850594,
+          "f1": 0.0832015648399538
+        }
+      },
+      "0.35": {
+        "themes": [
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 99,
+            "labelled": 18,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.006324666198172874
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "App Hesitation and Criticism",
+            "actionable": false,
+            "matching": 1306,
+            "labelled": 233,
+            "category": "cost",
+            "precision": 0.26180257510729615,
+            "recall": 0.13800904977375567
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 32,
+            "labelled": 8,
+            "category": "general",
+            "precision": 0.375,
+            "recall": 0.0021082220660576245
+          },
+          {
+            "name": "App appreciation and long-term use",
+            "actionable": false,
+            "matching": 1343,
+            "labelled": 216,
+            "category": "usability",
+            "precision": 0.2962962962962963,
+            "recall": 0.03240506329113924
+          },
+          {
+            "name": "Lack of folder organization",
+            "actionable": true,
+            "matching": 96,
+            "labelled": 41,
+            "category": "usability",
+            "precision": 0.5365853658536586,
+            "recall": 0.011139240506329114
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 359,
+            "labelled": 117,
+            "category": "general",
+            "precision": 0.29914529914529914,
+            "recall": 0.024595924104005622
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 999,
+            "labelled": 229,
+            "category": "usability",
+            "precision": 0.30131004366812225,
+            "recall": 0.034936708860759495
+          },
+          {
+            "name": "Missing message and email notifications",
+            "actionable": true,
+            "matching": 485,
+            "labelled": 187,
+            "category": "usability",
+            "precision": 0.39572192513368987,
+            "recall": 0.03746835443037975
+          },
+          {
+            "name": "Call Screen Behavior Issues",
+            "actionable": true,
+            "matching": 422,
+            "labelled": 135,
+            "category": "usability",
+            "precision": 0.4074074074074074,
+            "recall": 0.027848101265822784
+          },
+          {
+            "name": "Account compromise and lack of access",
+            "actionable": true,
+            "matching": 243,
+            "labelled": 89,
+            "category": "security",
+            "precision": 0.38202247191011235,
+            "recall": 0.11564625850340136
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 288,
+            "labelled": 70,
+            "category": "general",
+            "precision": 0.2571428571428571,
+            "recall": 0.012649332396345749
+          },
+          {
+            "name": "Pricing and subscription models",
+            "actionable": true,
+            "matching": 180,
+            "labelled": 83,
+            "category": "cost",
+            "precision": 0.6506024096385542,
+            "recall": 0.12217194570135746
+          },
+          {
+            "name": "Cursor jumping while editing text",
+            "actionable": true,
+            "matching": 294,
+            "labelled": 109,
+            "category": "usability",
+            "precision": 0.5321100917431193,
+            "recall": 0.029367088607594936
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 708,
+            "labelled": 211,
+            "category": "usability",
+            "precision": 0.43601895734597157,
+            "recall": 0.04658227848101266
+          },
+          {
+            "name": "Changing review ratings",
+            "actionable": false,
+            "matching": 49,
+            "labelled": 8,
+            "category": "reliability",
+            "precision": 0.25,
+            "recall": 0.006042296072507553
+          },
+          {
+            "name": "Audio routing and volume issues",
+            "actionable": true,
+            "matching": 309,
+            "labelled": 215,
+            "category": "usability",
+            "precision": 0.4232558139534884,
+            "recall": 0.04607594936708861
+          },
+          {
+            "name": "Photo sharing and uploading issues",
+            "actionable": true,
+            "matching": 314,
+            "labelled": 184,
+            "category": "usability",
+            "precision": 0.41304347826086957,
+            "recall": 0.03848101265822785
+          },
+          {
+            "name": "Variety and real-world tree planting",
+            "actionable": true,
+            "matching": 284,
+            "labelled": 62,
+            "category": "general",
+            "precision": 0.2903225806451613,
+            "recall": 0.012649332396345749
+          },
+          {
+            "name": "Dark mode and color scheme",
+            "actionable": true,
+            "matching": 207,
+            "labelled": 142,
+            "category": "usability",
+            "precision": 0.4788732394366197,
+            "recall": 0.034430379746835445
+          }
+        ],
+        "macro": {
+          "precision": 0.39403477961518546,
+          "recall": 0.04099637918037577,
+          "f1": 0.07426594122629897
+        }
+      },
+      "0.40": {
+        "themes": [
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 42,
+            "labelled": 10,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.0035137034434293743
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "App Hesitation and Criticism",
+            "actionable": false,
+            "matching": 809,
+            "labelled": 134,
+            "category": "cost",
+            "precision": 0.291044776119403,
+            "recall": 0.08823529411764706
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 8,
+            "labelled": 4,
+            "category": "effectiveness",
+            "precision": 0.25,
+            "recall": 0.001160092807424594
+          },
+          {
+            "name": "App appreciation and long-term use",
+            "actionable": false,
+            "matching": 1236,
+            "labelled": 194,
+            "category": "usability",
+            "precision": 0.28350515463917525,
+            "recall": 0.027848101265822784
+          },
+          {
+            "name": "Lack of folder organization",
+            "actionable": true,
+            "matching": 47,
+            "labelled": 12,
+            "category": "usability",
+            "precision": 0.5,
+            "recall": 0.0030379746835443038
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 185,
+            "labelled": 57,
+            "category": "reliability",
+            "precision": 0.2631578947368421,
+            "recall": 0.045317220543806644
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 972,
+            "labelled": 217,
+            "category": "usability",
+            "precision": 0.30414746543778803,
+            "recall": 0.033417721518987344
+          },
+          {
+            "name": "Missing message and email notifications",
+            "actionable": true,
+            "matching": 285,
+            "labelled": 112,
+            "category": "usability",
+            "precision": 0.375,
+            "recall": 0.021265822784810127
+          },
+          {
+            "name": "Call Screen Behavior Issues",
+            "actionable": true,
+            "matching": 281,
+            "labelled": 88,
+            "category": "usability",
+            "precision": 0.4431818181818182,
+            "recall": 0.019746835443037975
+          },
+          {
+            "name": "Account compromise and lack of access",
+            "actionable": true,
+            "matching": 139,
+            "labelled": 51,
+            "category": "security",
+            "precision": 0.4117647058823529,
+            "recall": 0.07142857142857142
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 165,
+            "labelled": 36,
+            "category": "general",
+            "precision": 0.2777777777777778,
+            "recall": 0.007027406886858749
+          },
+          {
+            "name": "Pricing and subscription models",
+            "actionable": true,
+            "matching": 110,
+            "labelled": 52,
+            "category": "cost",
+            "precision": 0.6730769230769231,
+            "recall": 0.07918552036199095
+          },
+          {
+            "name": "Cursor jumping while editing text",
+            "actionable": true,
+            "matching": 201,
+            "labelled": 67,
+            "category": "usability",
+            "precision": 0.5074626865671642,
+            "recall": 0.017215189873417722
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 636,
+            "labelled": 194,
+            "category": "usability",
+            "precision": 0.4175257731958763,
+            "recall": 0.0410126582278481
+          },
+          {
+            "name": "Changing review ratings",
+            "actionable": false,
+            "matching": 25,
+            "labelled": 4,
+            "category": "general",
+            "precision": 0.5,
+            "recall": 0.0014054813773717498
+          },
+          {
+            "name": "Audio routing and volume issues",
+            "actionable": true,
+            "matching": 244,
+            "labelled": 171,
+            "category": "usability",
+            "precision": 0.4327485380116959,
+            "recall": 0.03746835443037975
+          },
+          {
+            "name": "Photo sharing and uploading issues",
+            "actionable": true,
+            "matching": 228,
+            "labelled": 134,
+            "category": "usability",
+            "precision": 0.373134328358209,
+            "recall": 0.02531645569620253
+          },
+          {
+            "name": "Variety and real-world tree planting",
+            "actionable": true,
+            "matching": 236,
+            "labelled": 53,
+            "category": "general",
+            "precision": 0.3018867924528302,
+            "recall": 0.011243851018973999
+          },
+          {
+            "name": "Dark mode and color scheme",
+            "actionable": true,
+            "matching": 173,
+            "labelled": 123,
+            "category": "usability",
+            "precision": 0.4715447154471545,
+            "recall": 0.029367088607594936
+          }
+        ],
+        "macro": {
+          "precision": 0.3987873342044742,
+          "recall": 0.029695439185143162,
+          "f1": 0.055274871085220036
+        }
+      },
+      "0.45": {
+        "themes": [
+          {
+            "name": "Desire for better organization",
+            "actionable": true,
+            "matching": 17,
+            "labelled": 3,
+            "category": "efficiency",
+            "precision": 0.3333333333333333,
+            "recall": 0.0015698587127158557
+          },
+          {
+            "name": "Versatile and Convenient Mobile Messaging",
+            "actionable": false,
+            "matching": 0,
+            "labelled": 0,
+            "category": null,
+            "precision": null,
+            "recall": null
+          },
+          {
+            "name": "App Hesitation and Criticism",
+            "actionable": false,
+            "matching": 369,
+            "labelled": 53,
+            "category": "cost",
+            "precision": 0.3584905660377358,
+            "recall": 0.042986425339366516
+          },
+          {
+            "name": "Product appreciation and design",
+            "actionable": false,
+            "matching": 1,
+            "labelled": 1,
+            "category": "efficiency",
+            "precision": 1.0,
+            "recall": 0.0015698587127158557
+          },
+          {
+            "name": "App appreciation and long-term use",
+            "actionable": false,
+            "matching": 981,
+            "labelled": 150,
+            "category": "usability",
+            "precision": 0.2733333333333333,
+            "recall": 0.020759493670886076
+          },
+          {
+            "name": "Lack of folder organization",
+            "actionable": true,
+            "matching": 18,
+            "labelled": 3,
+            "category": "compatibility",
+            "precision": 0.6666666666666666,
+            "recall": 0.005970149253731343
+          },
+          {
+            "name": "Updates failing to fix issues",
+            "actionable": true,
+            "matching": 81,
+            "labelled": 25,
+            "category": "effectiveness",
+            "precision": 0.24,
+            "recall": 0.0069605568445475635
+          },
+          {
+            "name": "App updates and reinstalls fail",
+            "actionable": true,
+            "matching": 895,
+            "labelled": 196,
+            "category": "usability",
+            "precision": 0.30612244897959184,
+            "recall": 0.030379746835443037
+          },
+          {
+            "name": "Missing message and email notifications",
+            "actionable": true,
+            "matching": 145,
+            "labelled": 69,
+            "category": "usability",
+            "precision": 0.37681159420289856,
+            "recall": 0.013164556962025316
+          },
+          {
+            "name": "Call Screen Behavior Issues",
+            "actionable": true,
+            "matching": 161,
+            "labelled": 53,
+            "category": "usability",
+            "precision": 0.49056603773584906,
+            "recall": 0.013164556962025316
+          },
+          {
+            "name": "Account compromise and lack of access",
+            "actionable": true,
+            "matching": 69,
+            "labelled": 29,
+            "category": "security",
+            "precision": 0.4482758620689655,
+            "recall": 0.04421768707482993
+          },
+          {
+            "name": "Device and operating system compatibility",
+            "actionable": false,
+            "matching": 81,
+            "labelled": 24,
+            "category": "general",
+            "precision": 0.2916666666666667,
+            "recall": 0.004919184820801124
+          },
+          {
+            "name": "Pricing and subscription models",
+            "actionable": true,
+            "matching": 55,
+            "labelled": 27,
+            "category": "cost",
+            "precision": 0.7407407407407407,
+            "recall": 0.04524886877828054
+          },
+          {
+            "name": "Cursor jumping while editing text",
+            "actionable": true,
+            "matching": 123,
+            "labelled": 36,
+            "category": "usability",
+            "precision": 0.5555555555555556,
+            "recall": 0.010126582278481013
+          },
+          {
+            "name": "Core functionality and usability expectations",
+            "actionable": true,
+            "matching": 528,
+            "labelled": 171,
+            "category": "usability",
+            "precision": 0.4152046783625731,
+            "recall": 0.035949367088607596
+          },
+          {
+            "name": "Changing review ratings",
+            "actionable": false,
+            "matching": 13,
+            "labelled": 3,
+            "category": "general",
+            "precision": 0.6666666666666666,
+            "recall": 0.0014054813773717498
+          },
+          {
+            "name": "Audio routing and volume issues",
+            "actionable": true,
+            "matching": 163,
+            "labelled": 116,
+            "category": "usability",
+            "precision": 0.4396551724137931,
+            "recall": 0.025822784810126582
+          },
+          {
+            "name": "Photo sharing and uploading issues",
+            "actionable": true,
+            "matching": 138,
+            "labelled": 85,
+            "category": "usability",
+            "precision": 0.36470588235294116,
+            "recall": 0.01569620253164557
+          },
+          {
+            "name": "Variety and real-world tree planting",
+            "actionable": true,
+            "matching": 185,
+            "labelled": 47,
+            "category": "cost",
+            "precision": 0.2765957446808511,
+            "recall": 0.029411764705882353
+          },
+          {
+            "name": "Dark mode and color scheme",
+            "actionable": true,
+            "matching": 135,
+            "labelled": 104,
+            "category": "usability",
+            "precision": 0.46153846153846156,
+            "recall": 0.02430379746835443
+          }
+        ],
+        "macro": {
+          "precision": 0.4582068111229802,
+          "recall": 0.019664574959359884,
+          "f1": 0.03771074162061065
+        }
+      }
+    }
+  },
+  "recommended": {
+    "threshold": 0.25,
+    "themes": 20,
+    "macro_f1_by_threshold": {
+      "0.25": 0.09651580819863942,
+      "0.30": 0.07591451151484477,
+      "0.35": 0.06092588457405225,
+      "0.40": 0.04642312839734661,
+      "0.45": 0.03194865009601509
+    }
+  }
+}
