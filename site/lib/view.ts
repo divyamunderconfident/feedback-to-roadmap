@@ -35,7 +35,8 @@ export type DemoData = {
   hasText: boolean[];
   ratings: (number | null)[];
   segments: string[];
-  counts: Record<string, DemoTheme[]>;
+  themes: Record<string, DemoTheme>; // by fine-group key; slider counts share most of their themes
+  counts: Record<string, string[]>; // theme keys at each slider count
 };
 
 export const demoColumns = (d: DemoData): Columns => ({ hasText: d.hasText, rating: d.ratings, segment: d.segments });
@@ -44,10 +45,11 @@ export const demoColumns = (d: DemoData): Columns => ({ hasText: d.hasText, rati
 export function demoViews(d: DemoData, count: number): ThemeView[] {
   const cols = demoColumns(d);
   return orderThemes(
-    (d.counts[count] ?? []).map((t, i) => {
+    (d.counts[count] ?? []).map((k) => {
+      const t = d.themes[k];
       const size = sizeTheme(t.rows, t.rows.length, cols);
       return {
-        key: `demo:${count}:${i}`,
+        key: `demo:${k}`, // the same theme keeps its key (and card) as the slider moves
         name: t.name,
         problem: t.problem,
         actionable: t.actionable,

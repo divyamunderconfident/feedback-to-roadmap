@@ -1,10 +1,11 @@
-// Development only: saves the app's own outputs (sentences, themes, problem statements, similarities) to
-// eval/runs/demo_export.json for the offline evaluation in eval/match_eval.py. No labels pass through here.
-// Outside `next dev` it answers 404.
+// Development only: saves the app's own outputs (sentences, themes at every slider count, problem statements,
+// similarities) to eval/runs/demo_export_all.json, from which eval/build_demo.py builds the demo. No labels pass
+// through here. eval/runs/demo_export.json, the run the AWARE evaluation used, is left alone. Outside `next dev` it
+// answers 404.
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const FILE = path.join(process.cwd(), "..", "eval", "runs", "demo_export.json"); // cwd is site/ under next dev
+const FILE = path.join(process.cwd(), "..", "eval", "runs", "demo_export_all.json"); // cwd is site/ under next dev
 
 export async function POST(req: Request) {
   if (process.env.NODE_ENV !== "development") return new Response("Not found", { status: 404 });
@@ -16,5 +17,5 @@ export async function POST(req: Request) {
   }
   await mkdir(path.dirname(FILE), { recursive: true });
   await writeFile(FILE, body);
-  return Response.json({ saved: "eval/runs/demo_export.json", bytes: body.length });
+  return Response.json({ saved: "eval/runs/demo_export_all.json", bytes: body.length });
 }
