@@ -2,7 +2,7 @@
 
 **Turn a CSV of reviews, tickets or survey answers into ranked problems, each backed by quotes checked word for word.**
 
-**Live demo:** _link coming soon_
+**Live demo:** https://feedback-to-roadmap-three.vercel.app
 
 The site opens on a demo built from 3,542 real App Store reviews of 12 apps, with no key needed. To analyze your own file,
 upload a CSV and add your own free Gemini or Groq key. It costs nothing to host: the heavy work runs in your browser.
