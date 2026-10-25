@@ -359,41 +359,97 @@ export default function Home() {
 
   const demoCounts = demo ? Object.keys(demo.counts).map(Number) : [];
 
-  if (mode === "demo")
+  if (mode === "demo") {
+    const demoThemes = demo ? demoViews(demo, demoCount) : [];
+    const own = () => {
+      setMode("own");
+      window.scrollTo({ top: 0 });
+    };
     return (
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <section className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-teal-200 bg-teal-50 p-5">
-          <div>
-            <p role="status" className="font-semibold text-teal-900">
-              Demo: {demo ? demo.hasText.length.toLocaleString() : "3,542"} real App Store reviews
+      <main className="mx-auto max-w-6xl space-y-16 px-5 pt-12 pb-16 sm:pt-20">
+        <section className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
+          <div className="hero-in">
+            <p className="font-mono text-xs font-medium tracking-wide text-teal-700 uppercase">
+              Customer feedback → ranked problems
             </p>
-            <p className="mt-1 text-sm text-teal-800">
-              12 apps from the AWARE dataset, grouped in the browser and named in advance by {demo?.model ?? "Gemini"}.
-              No key needed.
+            <h1 className="mt-4 text-4xl leading-[1.08] font-semibold tracking-tight text-balance text-slate-900 sm:text-5xl">
+              Find the problems your users keep raising, with a receipt for every claim.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-pretty text-slate-600">
+              Drop in reviews, tickets or survey answers. Feedback to Roadmap groups them into themes in your browser,
+              sizes each one in code, and only shows claims whose quotes check out word for word.
             </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <a href="#results" className={primaryClass}>
+                Explore the demo
+              </a>
+              <button className={buttonClass} onClick={own}>
+                Analyze your own CSV
+              </button>
+            </div>
+            <p className="mt-4 text-sm text-slate-500">Free. Runs with your own Gemini or Groq key. No sign-up.</p>
           </div>
-          <button className={primaryClass} onClick={() => setMode("own")}>
-            Analyze your own CSV
-          </button>
+          <Receipt top={demoThemes[0]} count={demoCount} reviews={demo?.hasText.length} />
         </section>
-        {error && <p role="alert" className="text-sm text-amber-700">{error}</p>}
-        {demo && (
-          <ThemeResults
-            views={demoViews(demo, demoCount)}
-            cols={{ rating: true, date: false, segment: true }}
-            count={demoCount}
-            counts={demoCounts}
-            onCount={setDemoCount}
-            source="demo, 3,542 App Store reviews from the AWARE dataset"
-          />
-        )}
+
+        <section id="results" className="scroll-mt-6 space-y-5">
+          <div className="reveal flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-200 bg-teal-50/80 p-5">
+            <div>
+              <p role="status" className="font-semibold text-teal-900">
+                Demo: {demo ? demo.hasText.length.toLocaleString() : "3,542"} real App Store reviews
+              </p>
+              <p className="mt-1 text-sm text-teal-800">
+                12 apps from the AWARE dataset, grouped in the browser and named in advance by{" "}
+                {demo?.model ?? "Gemini"}. No key needed.
+              </p>
+            </div>
+            <button className={primaryClass} onClick={own}>
+              Analyze your own CSV
+            </button>
+          </div>
+          {error && (
+            <p role="alert" className="text-sm text-amber-700">
+              {error}
+            </p>
+          )}
+          {demo ? (
+            <ThemeResults
+              views={demoThemes}
+              cols={{ rating: true, date: false, segment: true }}
+              count={demoCount}
+              counts={demoCounts}
+              onCount={setDemoCount}
+              source="demo, 3,542 App Store reviews from the AWARE dataset"
+            />
+          ) : (
+            !error && <p className="text-sm text-slate-500">Loading the demo…</p>
+          )}
+        </section>
+
         <HowItWorks />
+
+        <section className="reveal rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-balance">Run it on your own feedback</h2>
+          <p className="mx-auto mt-3 max-w-xl text-slate-600 text-pretty">
+            Up to 5,000 rows. Your file stays in your browser; only sample sentences go to the model, with your own free
+            key.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <button className={primaryClass} onClick={own}>
+              Analyze your own CSV
+            </button>
+            <a href="/key-test" className={buttonClass}>
+              Get a free key
+            </a>
+          </div>
+        </section>
       </main>
     );
+  }
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-      <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <main className="mx-auto max-w-6xl space-y-10 px-5 py-10 sm:py-14">
+      <section className="hero-in space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-semibold">Analyze your own feedback</h1>
           <button className={buttonClass} onClick={() => setMode("demo")}>
@@ -591,7 +647,47 @@ export default function Home() {
 }
 
 const primaryClass =
-  "rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center rounded-lg border-0 bg-teal-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50";
+
+// The hero's focal piece: the demo's headline result, read from the real demo data.
+function Receipt({ top, count, reviews }: { top?: ThemeView; count: number; reviews?: number }) {
+  const quote = top?.examples[0];
+  return (
+    <figure className="hero-in-late rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_12px_32px_-12px_rgb(15_118_110/0.25)] sm:p-7">
+      <figcaption className="flex items-center justify-between font-mono text-xs text-slate-500">
+        <span>Demo result</span>
+        <span>{reviews ? reviews.toLocaleString() : "3,542"} App Store reviews</span>
+      </figcaption>
+      <p className="mt-5 text-4xl font-semibold tracking-tight text-slate-900">
+        {count} <span className="text-slate-500">ranked problems</span>
+      </p>
+      <div className="mt-6 border-t border-dashed border-slate-200 pt-5">
+        <p className="text-xs tracking-wide text-slate-500 uppercase">Top problem</p>
+        <p className="mt-1 font-medium text-slate-900">{top?.name ?? "Loading the demo…"}</p>
+        <div className="mt-3 flex items-center gap-3">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100" aria-hidden>
+            <div
+              className="h-full rounded-full bg-teal-600 transition-[width] duration-700"
+              style={{ width: `${Math.min(100, (top?.share ?? 0) * 100)}%` }}
+            />
+          </div>
+          <span className="font-mono text-sm font-semibold text-teal-700 tabular-nums">
+            {top ? `${(top.share * 100).toFixed(1)}%` : "–"}
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-slate-500">of reviews, counted in code</p>
+      </div>
+      {quote && (
+        <blockquote className="mt-5 border-l-2 border-teal-600 pl-3 text-sm text-slate-600">
+          “{quote.text}”
+          <footer className="mt-1 font-mono text-xs text-slate-400">
+            {[quote.segment, `row ${quote.row + 1}`].filter(Boolean).join(" · ")} · verbatim
+          </footer>
+        </blockquote>
+      )}
+    </figure>
+  );
+}
 
 function HowItWorks() {
   const steps = [
@@ -602,15 +698,17 @@ function HowItWorks() {
     ["Export", "Download the ranked themes as Markdown or CSV. Share, rating, segments and trend are computed in code, never by the model."],
   ];
   return (
-    <section id="how-it-works" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold">How it works</h2>
-      <ol className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <section id="how-it-works" className="scroll-mt-6">
+      <h2 className="reveal text-2xl font-semibold tracking-tight">How it works</h2>
+      <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {steps.map(([title, text], i) => (
-          <li key={title} className="text-sm">
-            <span className="font-semibold text-teal-700">
-              {i + 1}. {title}
-            </span>
-            <p className="mt-1 text-slate-600">{text}</p>
+          <li
+            key={title}
+            className="reveal rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+          >
+            <span className="font-mono text-xs text-teal-700">0{i + 1}</span>
+            <h3 className="mt-1 font-semibold text-slate-900">{title}</h3>
+            <p className="mt-2 text-slate-600">{text}</p>
           </li>
         ))}
       </ol>

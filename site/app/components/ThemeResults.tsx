@@ -26,7 +26,7 @@ function Stat({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
       <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-sm font-medium text-slate-800">{value}</dd>
+      <dd className="mt-0.5 text-sm font-medium text-slate-800 tabular-nums">{value}</dd>
     </div>
   );
 }
@@ -39,9 +39,9 @@ function ThemeCard({ t, rank, cols }: { t: ThemeView; rank: number; cols: Column
       ? `${pct(s.trend.before)} → ${pct(s.trend.after)}`
       : "too few dated reviews";
   return (
-    <li className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <li className="reveal rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:p-6">
       <div className="flex items-start gap-4">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 font-mono text-xs font-semibold text-slate-600">
           {rank}
         </span>
         <div className="min-w-0 flex-1">
@@ -55,7 +55,7 @@ function ThemeCard({ t, rank, cols }: { t: ThemeView; rank: number; cols: Column
           {t.failed && <p className="mt-1 text-sm text-amber-700">Could not name this theme. {t.failReason}</p>}
         </div>
         <div className="shrink-0 text-right">
-          <div className="text-2xl font-semibold text-teal-700">{pct(t.share)}</div>
+          <div className="font-mono text-2xl font-semibold tracking-tight text-teal-700 tabular-nums">{pct(t.share)}</div>
           <div className="text-xs text-slate-500">of reviews</div>
         </div>
       </div>
@@ -131,7 +131,7 @@ export function ThemeResults(props: {
   const meta = { source: props.source, count, dates: cols.date };
   return (
     <section className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="sticky top-2 z-10 flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur-sm">
         {counts.length > 1 ? (
           <label className="flex min-w-64 flex-1 flex-col gap-1 text-sm text-slate-700">
             <span>

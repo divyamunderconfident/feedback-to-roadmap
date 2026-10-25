@@ -1,12 +1,27 @@
 @import "tailwindcss";
 
+/* Geist is self-hosted by next/font (layout.tsx), so no request leaves this site. */
+@theme inline {
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
 /* Light theme only. Base styles sit in the base layer so Tailwind utility classes always win over them. */
 @layer base {
   body {
-    background: var(--color-slate-50);
+    /* One soft accent: a teal glow behind the header and hero, fading into the page. */
+    background:
+      radial-gradient(1100px 520px at 50% -160px, color-mix(in oklab, var(--color-teal-200) 55%, transparent), transparent 70%),
+      var(--color-slate-50);
+    background-repeat: no-repeat;
     color: var(--color-slate-900);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-sans);
     line-height: 1.5;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-teal-600);
+    outline-offset: 2px;
   }
 
   /* Plain controls (dev pages, the column mapping) still look like controls without extra classes. */
@@ -44,5 +59,37 @@
     vertical-align: top;
     padding: 0.4rem 0.6rem;
     border-bottom: 1px solid var(--color-slate-200);
+  }
+}
+
+/* Motion: small and optional. With reduced motion everything is simply shown. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: CSS only, so it plays (and ends visible) even without JavaScript. */
+  .hero-in {
+    animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .hero-in-late {
+    animation: rise 0.7s 0.15s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  /* Cards and sections fade up once as they scroll into view (RevealOnScroll adds .is-visible). */
+  .js-reveal .reveal:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .reveal {
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      translate 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
   }
 }
