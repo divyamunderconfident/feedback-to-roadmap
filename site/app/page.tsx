@@ -13,7 +13,7 @@ import { nameThemes, orderThemes, type Naming } from "@/lib/name";
 import { sizeTheme, type Columns } from "@/lib/size";
 import { reviewId, verifyClaims } from "@/lib/verify";
 import { demoViews, type DemoData, type ThemeView } from "@/lib/view";
-import { ThemeResults } from "./components/ThemeResults";
+import { buttonClass, ThemeResults } from "./components/ThemeResults";
 
 type Progress = Extract<WorkerMessage, { type: "progress" }>;
 type Result = Extract<WorkerMessage, { type: "done" }>;
@@ -351,22 +351,32 @@ export default function Home() {
   }
 
   const status = (f: Field) =>
-    checks[f] && <small role={checks[f].ok ? undefined : "alert"}> {checks[f].message}</small>;
+    checks[f] && (
+      <span role={checks[f].ok ? undefined : "alert"} className={`text-xs ${checks[f].ok ? "text-slate-500" : "text-amber-700"}`}>
+        {checks[f].message}
+      </span>
+    );
 
   const demoCounts = demo ? Object.keys(demo.counts).map(Number) : [];
 
   if (mode === "demo")
     return (
-      <main>
-        <h1>Feedback to Roadmap</h1>
-        <p role="status">
-          Demo: {demo ? demo.hasText.length.toLocaleString() : "3,542"} real App Store reviews, themes named by{" "}
-          {demo?.model ?? "Gemini"} in advance. No key needed.
-        </p>
-        <p>
-          <button onClick={() => setMode("own")}>Analyze your own CSV</button>
-        </p>
-        {error && <p role="alert">{error}</p>}
+      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+        <section className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-teal-200 bg-teal-50 p-5">
+          <div>
+            <p role="status" className="font-semibold text-teal-900">
+              Demo: {demo ? demo.hasText.length.toLocaleString() : "3,542"} real App Store reviews
+            </p>
+            <p className="mt-1 text-sm text-teal-800">
+              12 apps from the AWARE dataset, grouped in the browser and named in advance by {demo?.model ?? "Gemini"}.
+              No key needed.
+            </p>
+          </div>
+          <button className={primaryClass} onClick={() => setMode("own")}>
+            Analyze your own CSV
+          </button>
+        </section>
+        {error && <p role="alert" className="text-sm text-amber-700">{error}</p>}
         {demo && (
           <ThemeResults
             views={demoViews(demo, demoCount)}
@@ -377,192 +387,233 @@ export default function Home() {
             source="demo, 3,542 App Store reviews from the AWARE dataset"
           />
         )}
+        <HowItWorks />
       </main>
     );
 
   return (
-    <main>
-      <h1>Feedback to Roadmap</h1>
-      <p>
-        <button onClick={() => setMode("demo")}>Back to the demo</button>
-      </p>
+    <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+      <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-xl font-semibold">Analyze your own feedback</h1>
+          <button className={buttonClass} onClick={() => setMode("demo")}>
+            Back to the demo
+          </button>
+        </div>
+        <p className="text-sm text-slate-600">
+          Your file stays in this browser. Grouping runs here; only sample sentences are sent to the model, with your
+          own key.
+        </p>
 
-      <p>
-        <label>
-          Upload a CSV:{" "}
-          <input
-            type="file"
-            accept=".csv,text/csv"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (file) load(await file.text(), file.name);
-            }}
-          />
-        </label>{" "}
-        or <button onClick={loadDemo}>Load demo data</button>
-      </p>
-
-      {error && <p role="alert">{error}</p>}
-
-      {csv && (
-        <>
-          {csv.capped && (
-            <p role="alert">
-              This file has more than {MAX_ROWS.toLocaleString()} rows. Only the first{" "}
-              {MAX_ROWS.toLocaleString()} are used.
-            </p>
-          )}
-          <p>{csv.rows.length.toLocaleString()} rows loaded.</p>
-
-          <fieldset>
-            <legend>Columns</legend>
-            <label>
-              Text (required):{" "}
-              <select value={mapping.text} onChange={(e) => remap({ ...mapping, text: e.target.value })}>
-                {csv.columns.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-              {status("text")}
-            </label>
-            {OPTIONAL.map((field) => (
-              <label key={field}>
-                {" "}
-                {label(field)} (optional):{" "}
-                <select value={mapping[field]} onChange={(e) => remap({ ...mapping, [field]: e.target.value })}>
-                  <option value="">(none)</option>
-                  {csv.columns.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-                {status(field)}
-              </label>
-            ))}
-          </fieldset>
-
-          <div>
-            <button disabled={!checks.text?.ok || progress !== null} onClick={findThemes}>
-              Continue
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-slate-900">1. Upload a CSV</h2>
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              aria-label="CSV file"
+              className="text-sm text-slate-600"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) load(await file.text(), file.name);
+              }}
+            />
+            <span className="text-slate-500">or</span>
+            <button className={buttonClass} onClick={loadDemo}>
+              Use the demo CSV
             </button>
-            {checks.rating && !checks.rating.ok && <p>Rating will be ignored.</p>}
           </div>
-
-          {progress && (
-            <p>
-              <label>
-                {PHASES[progress.phase](progress)}
-                <br />
-                <progress value={progress.done} max={progress.total} />
-              </label>
+          {error && <p role="alert" className="text-sm text-amber-700">{error}</p>}
+          {csv?.capped && (
+            <p role="alert" className="text-sm text-amber-700">
+              This file has more than {MAX_ROWS.toLocaleString()} rows. Only the first {MAX_ROWS.toLocaleString()} are
+              used.
             </p>
           )}
-
-          {result && (
-            <section>
-              <h2>{shownCount} themes</h2>
-              <p>
-                {result.sentences.length.toLocaleString()} sentences of {MIN_WORDS} or more words.{" "}
-                {result.centered
-                  ? "App names and each app's average meaning were removed first, so themes group by problem rather than by app."
-                  : "No segment column is mapped, so themes may partly group by app or product."}
-              </p>
-              <p>
-                Sentences are split into {FINE_GROUPS} small groups, the closest groups are merged step by step
-                (avoiding very large groups), and the slider sets where to stop.
-              </p>
-              {counts.length > 1 && (
-                <p>
-                  <label>
-                    Fewer themes ↔ More themes{" "}
-                    <input
-                      type="range"
-                      min={counts[0]}
-                      max={counts.at(-1)}
-                      value={shownCount}
-                      onChange={(e) => setThemeCount(Number(e.target.value))}
-                    />
-                  </label>{" "}
-                  <output>{shownCount}</output>
-                </p>
-              )}
-              <p>
-                {Object.keys(keys).length === 0 ? (
-                  <>
-                    To name themes, save a Gemini or Groq key on the <a href="/key-test">key page</a>.{" "}
-                  </>
-                ) : (
-                  Object.keys(keys).length > 1 && (
-                    <label>
-                      Model:{" "}
-                      <select value={provider} onChange={(e) => setProvider(e.target.value as Provider)}>
-                        {PROVIDERS.filter((p) => keys[p]).map((p) => (
-                          <option key={p} value={p}>
-                            {p} ({MODELS[p]})
-                          </option>
-                        ))}
-                      </select>{" "}
-                    </label>
-                  )
-                )}
-                <button disabled={!provider || naming !== null} onClick={nameCurrent}>
-                  Name themes
-                </button>{" "}
-                {process.env.NODE_ENV === "development" && (
-                  <button disabled={naming !== null} onClick={exportEval}>
-                    Export evaluation data
-                  </button>
-                )}{" "}
-                {naming && `Naming theme ${Math.min(naming.done + 1, naming.total)} of ${naming.total}…`}
-                {namingNote && <span role="alert">{namingNote}</span>}
-              </p>
-              {matches.size > 0 && (
-                <ThresholdCheck
-                  themes={themes.filter((t) => matches.has(t.key))}
-                  matches={matches}
-                  outside={outside}
-                  names={names}
-                  sentences={result.sentences}
-                  cols={cols}
-                  trial={trial}
-                  setTrial={setTrial}
-                />
-              )}
-              <ThemeResults
-                views={views}
-                cols={{ rating: !!cols.rating, date: !!cols.date, segment: !!cols.segment }}
-                count={shownCount}
-                counts={counts}
-                onCount={setThemeCount}
-                source={fileName}
-              />
-            </section>
+          {csv && (
+            <p className="text-sm text-slate-600">
+              {fileName}: {csv.rows.length.toLocaleString()} rows loaded.
+            </p>
           )}
+        </div>
 
-          <table>
-            <caption>First 20 rows</caption>
-            <thead>
-              <tr>
-                {mapped.map((f) => (
-                  <th key={f}>
-                    {label(f)}
-                    <br />
-                    <small>{mapping[f]}</small>
-                  </th>
+        {csv && (
+          <>
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold text-slate-900">2. Pick the columns</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="text-slate-700">Text (required)</span>
+                  <select value={mapping.text} onChange={(e) => remap({ ...mapping, text: e.target.value })}>
+                    {csv.columns.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </select>
+                  {status("text")}
+                </label>
+                {OPTIONAL.map((field) => (
+                  <label key={field} className="flex flex-col gap-1 text-sm">
+                    <span className="text-slate-700">{label(field)} (optional)</span>
+                    <select value={mapping[field]} onChange={(e) => remap({ ...mapping, [field]: e.target.value })}>
+                      <option value="">(none)</option>
+                      {csv.columns.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                    {status(field)}
+                  </label>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {csv.rows.slice(0, 20).map((row, i) => (
-                <tr key={i}>
-                  {mapped.map((f) => (
-                    <td key={f}>{row[mapping[f]]}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+              </div>
+              <details className="text-sm">
+                <summary className="cursor-pointer text-slate-600">Preview the first 20 rows</summary>
+                <table className="mt-2">
+                  <thead>
+                    <tr>
+                      {mapped.map((f) => (
+                        <th key={f}>
+                          {label(f)} <span className="font-normal text-slate-500">({mapping[f]})</span>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {csv.rows.slice(0, 20).map((row, i) => (
+                      <tr key={i}>
+                        {mapped.map((f) => (
+                          <td key={f}>{row[mapping[f]]}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </details>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold text-slate-900">3. Find themes</h2>
+              <div className="flex flex-wrap items-center gap-3">
+                <button className={primaryClass} disabled={!checks.text?.ok || progress !== null} onClick={findThemes}>
+                  Find themes
+                </button>
+                {checks.rating && !checks.rating.ok && <span className="text-sm text-amber-700">Rating will be ignored.</span>}
+              </div>
+              {progress && (
+                <label className="block max-w-md text-sm text-slate-600">
+                  {PHASES[progress.phase](progress)}
+                  <progress className="mt-1 block w-full accent-teal-700" value={progress.done} max={progress.total} />
+                </label>
+              )}
+            </div>
+          </>
+        )}
+
+        {result && (
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-slate-900">4. Name the themes</h2>
+            <p className="text-sm text-slate-600">
+              {result.sentences.length.toLocaleString()} sentences of {MIN_WORDS} or more words, split into{" "}
+              {FINE_GROUPS} small groups and merged step by step.{" "}
+              {result.centered
+                ? "App names and each app's average meaning were removed first, so themes group by problem."
+                : "No segment column is mapped, so themes may partly group by product."}
+            </p>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              {Object.keys(keys).length === 0 ? (
+                <span className="text-slate-600">
+                  To name themes, save a free Gemini or Groq key on the{" "}
+                  <a href="/key-test" target="_blank" className="font-medium text-teal-700 underline">
+                    key page
+                  </a>
+                  ; this page picks it up without reloading.
+                </span>
+              ) : (
+                Object.keys(keys).length > 1 && (
+                  <label className="flex items-center gap-2">
+                    Model
+                    <select value={provider} onChange={(e) => setProvider(e.target.value as Provider)}>
+                      {PROVIDERS.filter((p) => keys[p]).map((p) => (
+                        <option key={p} value={p}>
+                          {p} ({MODELS[p]})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )
+              )}
+              <button className={primaryClass} disabled={!provider || naming !== null} onClick={nameCurrent}>
+                Name themes
+              </button>
+              {process.env.NODE_ENV === "development" && (
+                <button className={buttonClass} disabled={naming !== null} onClick={exportEval}>
+                  Export evaluation data (dev)
+                </button>
+              )}
+              {naming && (
+                <span className="text-slate-600">
+                  Naming theme {Math.min(naming.done + 1, naming.total)} of {naming.total}…
+                </span>
+              )}
+              {namingNote && (
+                <span role="alert" className="text-amber-700">
+                  {namingNote}
+                </span>
+              )}
+            </div>
+            {process.env.NODE_ENV === "development" && matches.size > 0 && (
+              <ThresholdCheck
+                themes={themes.filter((t) => matches.has(t.key))}
+                matches={matches}
+                outside={outside}
+                names={names}
+                sentences={result.sentences}
+                cols={cols}
+                trial={trial}
+                setTrial={setTrial}
+              />
+            )}
+          </div>
+        )}
+      </section>
+
+      {result && (
+        <ThemeResults
+          views={views}
+          cols={{ rating: !!cols.rating, date: !!cols.date, segment: !!cols.segment }}
+          count={shownCount}
+          counts={counts}
+          onCount={setThemeCount}
+          source={fileName}
+        />
       )}
+      <HowItWorks />
     </main>
+  );
+}
+
+const primaryClass =
+  "rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50";
+
+function HowItWorks() {
+  const steps = [
+    ["Upload", "Drop a CSV of reviews, tickets or survey answers and pick the text column, plus optional rating, date and segment."],
+    ["Group", "Your browser splits the text into sentences, embeds them with a small model (all-MiniLM-L6-v2) and groups them into themes. The slider sets how many."],
+    ["Name", "With your own free Gemini or Groq key, a model names each theme and writes a problem statement and up to 3 claims, each citing review rows."],
+    ["Check", "Every quote is checked word for word against the review it cites; claims that fail are hidden and counted. Only sentences that match a theme's problem statement count towards its size."],
+    ["Export", "Download the ranked themes as Markdown or CSV. Share, rating, segments and trend are computed in code, never by the model."],
+  ];
+  return (
+    <section id="how-it-works" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-lg font-semibold">How it works</h2>
+      <ol className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {steps.map(([title, text], i) => (
+          <li key={title} className="text-sm">
+            <span className="font-semibold text-teal-700">
+              {i + 1}. {title}
+            </span>
+            <p className="mt-1 text-slate-600">{text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }

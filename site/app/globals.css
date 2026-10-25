@@ -1,99 +1,48 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Light theme only. Base styles sit in the base layer so Tailwind utility classes always win over them. */
+@layer base {
+  body {
+    background: var(--color-slate-50);
+    color: var(--color-slate-900);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.5;
-}
+  /* Plain controls (dev pages, the column mapping) still look like controls without extra classes. */
+  button,
+  input::file-selector-button,
+  input[type="text"],
+  input[type="password"],
+  input[type="number"],
+  select {
+    border: 1px solid var(--color-slate-300);
+    border-radius: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background: white;
+  }
 
-/* Base styles only, until the real design. Tailwind's reset strips borders and margins, so restore the basics. */
-main,
-footer {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-}
+  button,
+  input::file-selector-button {
+    cursor: pointer;
+  }
 
-main > * + * {
-  margin-top: 1.5rem;
-}
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-h1 {
-  font-size: 1.75rem;
-  font-weight: 600;
-}
+  table {
+    font-size: 0.875rem;
+    display: block; /* wide tables scroll on their own on small screens instead of the whole page */
+    overflow-x: auto;
+  }
 
-button,
-input::file-selector-button,
-input[type="text"],
-input[type="password"],
-select {
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  padding: 0.3rem 0.8rem;
-  background: transparent;
-}
-
-button,
-input::file-selector-button {
-  cursor: pointer;
-}
-
-button:hover,
-input::file-selector-button:hover {
-  background: color-mix(in srgb, currentColor 10%, transparent);
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  background: transparent;
-}
-
-fieldset {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.5rem;
-  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
-  padding: 0.75rem 1rem 1rem;
-}
-
-table {
-  font-size: 0.875rem;
-  display: block; /* wide tables scroll on their own on small screens instead of the whole page */
-  overflow-x: auto;
-}
-
-caption {
-  text-align: left;
-  white-space: nowrap;
-  font-weight: 600;
-  padding-bottom: 0.5rem;
-}
-
-th,
-td {
-  text-align: left;
-  vertical-align: top;
-  padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  th,
+  td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--color-slate-200);
+  }
 }
