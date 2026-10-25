@@ -369,7 +369,7 @@ export default function Home() {
       <main className="mx-auto max-w-6xl space-y-16 px-5 pt-12 pb-16 sm:pt-20">
         <section className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
           <div className="hero-in">
-            <p className="font-mono text-xs font-medium tracking-wide text-teal-700 uppercase">
+            <p className="font-mono text-xs font-medium tracking-wide text-blue-600 uppercase">
               Customer feedback → ranked problems
             </p>
             <h1 className="mt-4 text-4xl leading-[1.08] font-semibold tracking-tight text-balance text-slate-900 sm:text-5xl">
@@ -393,12 +393,12 @@ export default function Home() {
         </section>
 
         <section id="results" className="scroll-mt-6 space-y-5">
-          <div className="reveal flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-200 bg-teal-50/80 p-5">
+          <div className="reveal flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-blue-50/80 p-5">
             <div>
-              <p role="status" className="font-semibold text-teal-900">
+              <p role="status" className="font-semibold text-blue-900">
                 Demo: {demo ? demo.hasText.length.toLocaleString() : "3,542"} real App Store reviews
               </p>
-              <p className="mt-1 text-sm text-teal-800">
+              <p className="mt-1 text-sm text-blue-700">
                 12 apps from the AWARE dataset, grouped in the browser and named in advance by{" "}
                 {demo?.model ?? "Gemini"}. No key needed.
               </p>
@@ -428,7 +428,7 @@ export default function Home() {
 
         <HowItWorks />
 
-        <section className="reveal rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
+        <section className="reveal rounded-2xl border border-blue-100 bg-white p-8 text-center shadow-sm sm:p-10">
           <h2 className="text-2xl font-semibold tracking-tight text-balance">Run it on your own feedback</h2>
           <p className="mx-auto mt-3 max-w-xl text-slate-600 text-pretty">
             Up to 5,000 rows. Your file stays in your browser; only sample sentences go to the model, with your own free
@@ -449,7 +449,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-6xl space-y-10 px-5 py-10 sm:py-14">
-      <section className="hero-in space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+      <section className="hero-in space-y-5 rounded-2xl border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-semibold">Analyze your own feedback</h1>
           <button className={buttonClass} onClick={() => setMode("demo")}>
@@ -556,7 +556,7 @@ export default function Home() {
               {progress && (
                 <label className="block max-w-md text-sm text-slate-600">
                   {PHASES[progress.phase](progress)}
-                  <progress className="mt-1 block w-full accent-teal-700" value={progress.done} max={progress.total} />
+                  <progress className="mt-1 block w-full accent-blue-600" value={progress.done} max={progress.total} />
                 </label>
               )}
             </div>
@@ -577,7 +577,7 @@ export default function Home() {
               {Object.keys(keys).length === 0 ? (
                 <span className="text-slate-600">
                   To name themes, save a free Gemini or Groq key on the{" "}
-                  <a href="/key-test" target="_blank" className="font-medium text-teal-700 underline">
+                  <a href="/key-test" target="_blank" className="font-medium text-blue-600 underline">
                     key page
                   </a>
                   ; this page picks it up without reloading.
@@ -647,13 +647,13 @@ export default function Home() {
 }
 
 const primaryClass =
-  "inline-flex items-center rounded-lg border-0 bg-teal-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center rounded-lg border-0 bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50";
 
 // The hero's focal piece: the demo's headline result, read from the real demo data.
 function Receipt({ top, count, reviews }: { top?: ThemeView; count: number; reviews?: number }) {
   const quote = top?.examples[0];
   return (
-    <figure className="hero-in-late rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_12px_32px_-12px_rgb(15_118_110/0.25)] sm:p-7">
+    <figure className="hero-in-late rounded-2xl border border-blue-100 bg-white p-6 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_12px_32px_-12px_rgb(37_99_235/0.22)] sm:p-7">
       <figcaption className="flex items-center justify-between font-mono text-xs text-slate-500">
         <span>Demo result</span>
         <span>{reviews ? reviews.toLocaleString() : "3,542"} App Store reviews</span>
@@ -667,18 +667,18 @@ function Receipt({ top, count, reviews }: { top?: ThemeView; count: number; revi
         <div className="mt-3 flex items-center gap-3">
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100" aria-hidden>
             <div
-              className="h-full rounded-full bg-teal-600 transition-[width] duration-700"
+              className="h-full rounded-full bg-blue-500 transition-[width] duration-700"
               style={{ width: `${Math.min(100, (top?.share ?? 0) * 100)}%` }}
             />
           </div>
-          <span className="font-mono text-sm font-semibold text-teal-700 tabular-nums">
+          <span className="font-mono text-sm font-semibold text-blue-600 tabular-nums">
             {top ? `${(top.share * 100).toFixed(1)}%` : "–"}
           </span>
         </div>
         <p className="mt-1 text-xs text-slate-500">of reviews, counted in code</p>
       </div>
       {quote && (
-        <blockquote className="mt-5 border-l-2 border-teal-600 pl-3 text-sm text-slate-600">
+        <blockquote className="mt-5 border-l-2 border-blue-500 pl-3 text-sm text-slate-600">
           “{quote.text}”
           <footer className="mt-1 font-mono text-xs text-slate-400">
             {[quote.segment, `row ${quote.row + 1}`].filter(Boolean).join(" · ")} · verbatim
@@ -704,9 +704,9 @@ function HowItWorks() {
         {steps.map(([title, text], i) => (
           <li
             key={title}
-            className="reveal rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+            className="reveal rounded-2xl border border-blue-100 bg-white p-5 text-sm shadow-sm hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
           >
-            <span className="font-mono text-xs text-teal-700">0{i + 1}</span>
+            <span className="font-mono text-xs text-blue-600">0{i + 1}</span>
             <h3 className="mt-1 font-semibold text-slate-900">{title}</h3>
             <p className="mt-2 text-slate-600">{text}</p>
           </li>

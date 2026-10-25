@@ -39,7 +39,7 @@ function ThemeCard({ t, rank, cols }: { t: ThemeView; rank: number; cols: Column
       ? `${pct(s.trend.before)} → ${pct(s.trend.after)}`
       : "too few dated reviews";
   return (
-    <li className="reveal rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:p-6">
+    <li className="reveal rounded-2xl border border-blue-100 bg-white p-5 shadow-sm hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md sm:p-6">
       <div className="flex items-start gap-4">
         <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 font-mono text-xs font-semibold text-slate-600">
           {rank}
@@ -55,7 +55,7 @@ function ThemeCard({ t, rank, cols }: { t: ThemeView; rank: number; cols: Column
           {t.failed && <p className="mt-1 text-sm text-amber-700">Could not name this theme. {t.failReason}</p>}
         </div>
         <div className="shrink-0 text-right">
-          <div className="font-mono text-2xl font-semibold tracking-tight text-teal-700 tabular-nums">{pct(t.share)}</div>
+          <div className="font-mono text-2xl font-semibold tracking-tight text-blue-600 tabular-nums">{pct(t.share)}</div>
           <div className="text-xs text-slate-500">of reviews</div>
         </div>
       </div>
@@ -85,7 +85,7 @@ function ThemeCard({ t, rank, cols }: { t: ThemeView; rank: number; cols: Column
               <li key={i} className="text-sm text-slate-800">
                 {c.claim}
                 {c.evidence.map((e, j) => (
-                  <q key={j} className="mt-1 block border-l-2 border-teal-600 pl-3 text-slate-600">
+                  <q key={j} className="mt-1 block border-l-2 border-blue-500 pl-3 text-slate-600">
                     {shorten(e.quote)} <span className="text-xs text-slate-400">row {rowOf(e.review) + 1}</span>
                   </q>
                 ))}
@@ -131,7 +131,7 @@ export function ThemeResults(props: {
   const meta = { source: props.source, count, dates: cols.date };
   return (
     <section className="space-y-4">
-      <div className="sticky top-2 z-10 flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur-sm">
+      <div className="sticky top-2 z-10 flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-blue-100 bg-white/95 p-4 shadow-sm backdrop-blur-sm">
         {counts.length > 1 ? (
           <label className="flex min-w-64 flex-1 flex-col gap-1 text-sm text-slate-700">
             <span>
@@ -146,7 +146,7 @@ export function ThemeResults(props: {
               value={index}
               onChange={(e) => props.onCount(counts[Number(e.target.value)])}
               aria-valuetext={`${count} themes`}
-              className="accent-teal-700"
+              className="accent-blue-600"
             />
           </label>
         ) : (

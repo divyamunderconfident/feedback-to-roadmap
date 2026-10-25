@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { Logo } from "./components/Logo";
 import { RevealOnScroll } from "./components/RevealOnScroll";
 import "./globals.css";
 
@@ -36,12 +37,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <RevealOnScroll />
-        <header className="border-b border-slate-200/70 bg-white/70 backdrop-blur-sm">
+        <header className="border-b border-blue-100 bg-white/70 backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-            <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight text-slate-900">
-              <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-teal-700 font-mono text-[10px] text-white">
-                F→R
-              </span>
+            <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight text-slate-900">
+              <Logo />
               Feedback to Roadmap
             </Link>
             <nav aria-label="Main" className="flex gap-5 text-sm">
@@ -61,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </div>
         {/* Required credit, from docs/data_credit.md */}
-        <footer className="border-t border-slate-200 bg-white">
+        <footer className="border-t border-blue-100 bg-white">
           <div className="mx-auto max-w-6xl space-y-1.5 px-5 py-6 text-xs leading-relaxed text-slate-500">
             <p>
               Demo data: AWARE dataset by N. Alturaief, H. Aljamaan and M. Baslyman (ASEW 2021,{" "}

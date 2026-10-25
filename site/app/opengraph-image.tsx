@@ -16,27 +16,22 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "radial-gradient(900px 420px at 50% -80px, #99f6e4, #f8fafc 70%)",
+          background: "radial-gradient(900px 420px at 50% -80px, #bae6fd, #f5f9ff 70%)",
           color: "#0f172a",
           fontFamily: "sans-serif",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 30, fontWeight: 600 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 52,
-              height: 52,
-              borderRadius: 10,
-              background: "#0f766e",
-              color: "white",
-              fontSize: 18,
-            }}
-          >
-            F→R
-          </div>
+          {/* Same mark as app/icon.svg */}
+          <svg width="52" height="52" viewBox="0 0 32 32">
+            <rect width="32" height="32" rx="8" fill="#2563eb" />
+            <circle cx="8.5" cy="10" r="1.75" fill="#fff" opacity="0.55" />
+            <circle cx="8.5" cy="16" r="1.75" fill="#fff" opacity="0.55" />
+            <circle cx="8.5" cy="22" r="1.75" fill="#fff" opacity="0.55" />
+            <rect x="13" y="8.5" width="12.5" height="3" rx="1.5" fill="#fff" />
+            <rect x="13" y="14.5" width="9" height="3" rx="1.5" fill="#fff" opacity="0.85" />
+            <rect x="13" y="20.5" width="5.5" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+          </svg>
           Feedback to Roadmap
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -47,7 +42,7 @@ export default function OpenGraphImage() {
             Ranked themes · sizes computed in code · quotes checked word for word
           </div>
         </div>
-        <div style={{ display: "flex", fontSize: 24, color: "#0f766e" }}>
+        <div style={{ display: "flex", fontSize: 24, color: "#2563eb" }}>
           Live demo on 3,542 real App Store reviews · runs in your browser
         </div>
       </div>

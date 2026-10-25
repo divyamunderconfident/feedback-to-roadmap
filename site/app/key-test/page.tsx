@@ -40,15 +40,15 @@ export default function KeyTest() {
 
   return (
     <main className="mx-auto max-w-2xl space-y-4 px-4 py-8">
-      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm [&_label]:text-sm">
+      <div className="space-y-4 rounded-xl border border-blue-100 bg-white p-5 shadow-sm [&_label]:text-sm">
       <h1 className="text-xl font-semibold">Your API key</h1>
       <p className="text-sm text-slate-600">
         Naming themes needs a free key from{" "}
-        <a className="text-teal-700 underline" href="https://aistudio.google.com/apikey">
+        <a className="text-blue-600 underline" href="https://aistudio.google.com/apikey">
           Google AI Studio (Gemini)
         </a>{" "}
         or{" "}
-        <a className="text-teal-700 underline" href="https://console.groq.com/keys">
+        <a className="text-blue-600 underline" href="https://console.groq.com/keys">
           Groq
         </a>
         . Your key is saved only in this browser (localStorage) and sent only to the provider. Groq calls can go
@@ -95,14 +95,14 @@ export default function KeyTest() {
 
       <p className="flex flex-wrap gap-3">
         <button
-          className="rounded-lg border-0 bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+          className="rounded-lg border-0 bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           onClick={test}
           disabled={!key || busy}
         >
           Test
         </button>
         <button onClick={forget}>Forget my key</button>
-        <Link href="/" className="self-center text-sm text-teal-700 underline">
+        <Link href="/" className="self-center text-sm text-blue-600 underline">
           Back to Feedback to Roadmap
         </Link>
       </p>

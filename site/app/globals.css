@@ -9,10 +9,11 @@
 /* Light theme only. Base styles sit in the base layer so Tailwind utility classes always win over them. */
 @layer base {
   body {
-    /* One soft accent: a teal glow behind the header and hero, fading into the page. */
+    /* Light blue theme: a faint blue page tint with one soft glow behind the header and hero. */
     background:
-      radial-gradient(1100px 520px at 50% -160px, color-mix(in oklab, var(--color-teal-200) 55%, transparent), transparent 70%),
-      var(--color-slate-50);
+      radial-gradient(1100px 520px at 50% -160px, color-mix(in oklab, var(--color-sky-200) 60%, transparent), transparent 70%),
+      radial-gradient(800px 600px at 100% 40%, color-mix(in oklab, var(--color-blue-100) 45%, transparent), transparent 70%),
+      color-mix(in oklab, var(--color-blue-50) 60%, white);
     background-repeat: no-repeat;
     color: var(--color-slate-900);
     font-family: var(--font-sans);
@@ -20,7 +21,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-teal-600);
+    outline: 2px solid var(--color-blue-500);
     outline-offset: 2px;
   }
 
