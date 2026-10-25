@@ -10,8 +10,10 @@ import { loadKey, PROVIDERS } from "@/lib/keys";
 import { chat, MODELS, type Provider } from "@/lib/llm";
 import { checkColumn, guessMapping, parseDate, parseRating, type Field, type Mapping } from "@/lib/mapping";
 import { nameThemes, orderThemes, type Naming } from "@/lib/name";
-import { sizeTheme, type Columns, type Size } from "@/lib/size";
-import { reviewId, rowOf, verifyClaims } from "@/lib/verify";
+import { sizeTheme, type Columns } from "@/lib/size";
+import { reviewId, verifyClaims } from "@/lib/verify";
+import { demoViews, type DemoData, type ThemeView } from "@/lib/view";
+import { ThemeResults } from "./components/ThemeResults";
 
 type Progress = Extract<WorkerMessage, { type: "progress" }>;
 type Result = Extract<WorkerMessage, { type: "done" }>;
@@ -121,27 +123,15 @@ function ThresholdCheck(props: {
   );
 }
 
-// One line of size numbers, all computed in code.
-function sizeLine(s: Size, cols: Columns) {
-  const trend = !cols.date
-    ? "no dates"
-    : !s.trend
-      ? "too few dated reviews"
-      : `${pct(s.trend.before)} of reviews before the median date, ${pct(s.trend.after)} after`;
-  return [
-    `${s.reviews.toLocaleString()} reviews (${pct(s.share)} of reviews)`,
-    `${s.sentences.toLocaleString()} sentences`,
-    s.avgRating === null ? "no ratings" : `average rating ${s.avgRating.toFixed(1)}`,
-    cols.segment ? `top segments: ${s.segments.map(([seg, n]) => `${seg} ${n}`).join(", ")}` : "no segments",
-    `trend: ${trend}`,
-  ].join(" · ");
-}
-
 const OPTIONAL = ["rating", "date", "segment"] as const;
 const FIELDS: Field[] = ["text", ...OPTIONAL];
 const label = (field: Field) => field[0].toUpperCase() + field.slice(1);
 
 export default function Home() {
+  // The site opens on the precomputed demo; visitors can switch to their own CSV and key.
+  const [mode, setMode] = useState<"demo" | "own">("demo");
+  const [demo, setDemo] = useState<DemoData | null>(null);
+  const [demoCount, setDemoCount] = useState(DEFAULT_THEMES);
   const [csv, setCsv] = useState<ParsedCsv | null>(null);
   const [mapping, setMapping] = useState<Mapping>({ text: "", rating: "", date: "", segment: "" });
   const [error, setError] = useState("");
@@ -172,6 +162,13 @@ export default function Home() {
     read();
     window.addEventListener("storage", read);
     return () => window.removeEventListener("storage", read);
+  }, []);
+
+  useEffect(() => {
+    fetch("/demo.json")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`${r.status}`))))
+      .then(setDemo)
+      .catch((e) => setError(`Could not load the demo (${e.message}).`));
   }, []);
 
   // Any new file or mapping makes earlier themes out of date, so stop a running job and clear them.
@@ -272,12 +269,30 @@ export default function Home() {
     });
   }, [result, shownCount, cols, provider, matches]);
 
-  const shown = orderThemes(
-    themes.map((t) => ({
-      ...t,
-      actionable: names.get(t.key)?.actionable,
-      failed: nameErrors.has(t.key) && !names.has(t.key),
-    })),
+  const views: ThemeView[] = orderThemes(
+    themes.map((t) => {
+      const named = names.get(t.key);
+      const { shown: claims, hidden } = named
+        ? verifyClaims(named.claims, (row) => csv?.rows[row]?.[mapping.text])
+        : { shown: [], hidden: 0 };
+      return {
+        key: t.key,
+        name: named?.name ?? null,
+        problem: named?.problem ?? null,
+        actionable: named?.actionable,
+        failed: nameErrors.has(t.key) && !named,
+        failReason: nameErrors.get(t.key),
+        size: t.size,
+        share: t.share,
+        loose: t.loose,
+        examples: t.examples.map((i) => {
+          const s = result!.sentences[i];
+          return { text: s.text, row: s.row, segment: s.app || undefined };
+        }),
+        claims,
+        hidden,
+      };
+    }),
   );
 
   async function nameCurrent() {
@@ -336,9 +351,38 @@ export default function Home() {
   const status = (f: Field) =>
     checks[f] && <small role={checks[f].ok ? undefined : "alert"}> {checks[f].message}</small>;
 
+  const demoCounts = demo ? Object.keys(demo.counts).map(Number) : [];
+
+  if (mode === "demo")
+    return (
+      <main>
+        <h1>Feedback to Roadmap</h1>
+        <p role="status">
+          Demo: {demo ? demo.hasText.length.toLocaleString() : "3,542"} real App Store reviews, themes named by{" "}
+          {demo?.model ?? "Gemini"} in advance. No key needed.
+        </p>
+        <p>
+          <button onClick={() => setMode("own")}>Analyze your own CSV</button>
+        </p>
+        {error && <p role="alert">{error}</p>}
+        {demo && (
+          <ThemeResults
+            views={demoViews(demo, demoCount)}
+            cols={{ rating: true, date: false, segment: true }}
+            count={demoCount}
+            counts={demoCounts}
+            onCount={setDemoCount}
+          />
+        )}
+      </main>
+    );
+
   return (
     <main>
       <h1>Feedback to Roadmap</h1>
+      <p>
+        <button onClick={() => setMode("demo")}>Back to the demo</button>
+      </p>
 
       <p>
         <label>
@@ -480,65 +524,13 @@ export default function Home() {
                   setTrial={setTrial}
                 />
               )}
-              <p>One review can raise several problems, so shares add up to more than 100%.</p>
-              <ol>
-                {shown.map((t, i) => {
-                  const named = names.get(t.key);
-                  const { shown: claims, hidden } = named
-                    ? verifyClaims(named.claims, (row) => csv.rows[row]?.[mapping.text])
-                    : { shown: [], hidden: 0 };
-                  return (
-                    <li key={t.key}>
-                      <strong>{named?.name ?? (t.failed ? "Unnamed theme (naming failed)" : `Theme ${i + 1}`)}</strong>
-                      {named && !named.actionable && " (not actionable: praise or filler)"}
-                      {named && <p>{named.problem}</p>}
-                      <p>
-                        <small>
-                          {sizeLine(t.size, cols)}
-                          {t.loose > 0 && ` · loosely related: ${t.loose.toLocaleString()} sentences`}
-                        </small>
-                      </p>
-                      {claims.length > 0 && (
-                        <ul>
-                          {claims.map((c, j) => (
-                            <li key={j}>
-                              {c.claim}{" "}
-                              {c.evidence.map((e, k) => (
-                                <small key={k}>
-                                  “{shorten(e.quote)}” (row {rowOf(e.review) + 1}){" "}
-                                </small>
-                              ))}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {hidden > 0 && (
-                        <p>
-                          <small>
-                            {hidden} claim{hidden === 1 ? "" : "s"} hidden: a quote was not found word for word in the
-                            review it cites.
-                          </small>
-                        </p>
-                      )}
-                      {nameErrors.has(t.key) && !named && (
-                        <p>
-                          <small>Could not name this theme: {nameErrors.get(t.key)}</small>
-                        </p>
-                      )}
-                      <ul>
-                        {t.examples.map((i) => {
-                          const e = result.sentences[i];
-                          return (
-                            <li key={i}>
-                              “{shorten(e.text)}” <small>({[e.app, `row ${e.row + 1}`].filter(Boolean).join(", ")})</small>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </li>
-                  );
-                })}
-              </ol>
+              <ThemeResults
+                views={views}
+                cols={{ rating: !!cols.rating, date: !!cols.date, segment: !!cols.segment }}
+                count={shownCount}
+                counts={counts}
+                onCount={setThemeCount}
+              />
             </section>
           )}
 
