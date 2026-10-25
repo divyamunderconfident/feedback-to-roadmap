@@ -133,6 +133,7 @@ export default function Home() {
   const [demo, setDemo] = useState<DemoData | null>(null);
   const [demoCount, setDemoCount] = useState(DEFAULT_THEMES);
   const [csv, setCsv] = useState<ParsedCsv | null>(null);
+  const [fileName, setFileName] = useState("");
   const [mapping, setMapping] = useState<Mapping>({ text: "", rating: "", date: "", segment: "" });
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Progress | null>(null);
@@ -214,11 +215,12 @@ export default function Home() {
     w.postMessage({ type: "run", reviews } satisfies WorkerRequest);
   }
 
-  function load(text: string) {
+  function load(text: string, name: string) {
     try {
       const parsed = parseCsv(text);
       reset();
       setCsv(parsed);
+      setFileName(name);
       setMapping(guessMapping(parsed.columns));
       setError("");
     } catch (e) {
@@ -230,7 +232,7 @@ export default function Home() {
   async function loadDemo() {
     const res = await fetch("/demo_reviews.csv");
     if (!res.ok) return setError(`Could not load the demo data (${res.status}).`);
-    load(await res.text());
+    load(await res.text(), "demo_reviews.csv");
   }
 
   const mapped = FIELDS.filter((f) => mapping[f]);
@@ -372,6 +374,7 @@ export default function Home() {
             count={demoCount}
             counts={demoCounts}
             onCount={setDemoCount}
+            source="demo, 3,542 App Store reviews from the AWARE dataset"
           />
         )}
       </main>
@@ -392,7 +395,7 @@ export default function Home() {
             accept=".csv,text/csv"
             onChange={async (e) => {
               const file = e.target.files?.[0];
-              if (file) load(await file.text());
+              if (file) load(await file.text(), file.name);
             }}
           />
         </label>{" "}
@@ -530,6 +533,7 @@ export default function Home() {
                 count={shownCount}
                 counts={counts}
                 onCount={setThemeCount}
+                source={fileName}
               />
             </section>
           )}

@@ -2,6 +2,7 @@
 
 // Ranked theme cards and the theme-count slider, shared by the demo and uploaded files.
 import type { ReactNode } from "react";
+import { toCsv, toMarkdown } from "@/lib/report";
 import { rowOf } from "@/lib/verify";
 import type { ThemeView } from "@/lib/view";
 
@@ -9,6 +10,17 @@ export type ColumnFlags = { rating: boolean; date: boolean; segment: boolean };
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 const shorten = (s: string, n = 220) => (s.length > n ? s.slice(0, n) + "…" : s);
+
+// Saves text as a file in the visitor's browser; nothing leaves the browser.
+function download(name: string, text: string, type: string) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = Object.assign(document.createElement("a"), { href: url, download: name });
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export const buttonClass =
+  "rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50";
 
 function Stat({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -111,10 +123,12 @@ export function ThemeResults(props: {
   count: number;
   counts: number[]; // theme counts the slider can show, ascending
   onCount: (n: number) => void;
-  actions?: ReactNode; // buttons shown next to the slider
+  source: string; // named in the exported report
+  actions?: ReactNode; // more buttons shown next to the slider
 }) {
   const { views, cols, count, counts } = props;
   const index = Math.max(0, counts.indexOf(count));
+  const meta = { source: props.source, count, dates: cols.date };
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -138,7 +152,15 @@ export function ThemeResults(props: {
         ) : (
           <span className="text-sm font-semibold text-slate-900">{count} themes</span>
         )}
-        {props.actions && <div className="flex flex-wrap gap-2">{props.actions}</div>}
+        <div className="flex flex-wrap gap-2">
+          {props.actions}
+          <button className={buttonClass} onClick={() => download("themes.md", toMarkdown(views, meta), "text/markdown")}>
+            Download Markdown
+          </button>
+          <button className={buttonClass} onClick={() => download("themes.csv", toCsv(views, meta), "text/csv")}>
+            Download CSV
+          </button>
+        </div>
       </div>
       <p className="text-xs text-slate-500">
         Ranked by share of reviews; themes that are praise or filler sit at the bottom. One review can raise several
